@@ -45,17 +45,29 @@ void mvBlock(BLOCK *block, int dy, int dx) {
 }
 
 void rotateBlock(BLOCK *block, int rotate) {
-	int x1, x2, x3, x4;
-	int y1, y2, y3, y4;
 
 	colorBlock(block, COLOR_BLACK_BLOCK);
 
-	x2 = (block->x2 - block->x1) / SQUIRE_XLENGTH ;
-	y2 = (block->y2 - block->y1) / SQUIRE_YLENGTH;
-	x3 = (block->x3 - block->x1) / SQUIRE_XLENGTH;
-	y3 = (block->y3 - block->y1) / SQUIRE_YLENGTH;
-	x4 = (block->x4 - block->x1) / SQUIRE_XLENGTH;
-	y4 = (block->y4 - block->y1) / SQUIRE_YLENGTH;
+	*block = calc_rotate(*block, rotate);
+
+	colorBlock(block, COLOR_BLUE_BLOCK);
+}
+
+
+BLOCK calc_rotate(BLOCK block, int rotate) {
+	int x1, x2, x3, x4;
+	int y1, y2, y3, y4;
+
+	x1 = 0;
+	y1 = 0;
+	x2 = (block.x2 - block.x1) / SQUIRE_XLENGTH;
+	y2 = (block.y2 - block.y1) / SQUIRE_YLENGTH;
+	x3 = (block.x3 - block.x1) / SQUIRE_XLENGTH;
+	y3 = (block.y3 - block.y1) / SQUIRE_YLENGTH;
+	x4 = (block.x4 - block.x1) / SQUIRE_XLENGTH;
+	y4 = (block.y4 - block.y1) / SQUIRE_YLENGTH;
+	
+
 	swap(&x2, &y2);
 	swap(&x3, &y3);
 	swap(&x4, &y4);
@@ -70,50 +82,16 @@ void rotateBlock(BLOCK *block, int rotate) {
 		y4 *= -1;
 	}
 
-	block->x2 = block->x1 + (x2 * SQUIRE_XLENGTH);
-	block->y2 = block->y1 + (y2 * SQUIRE_YLENGTH);
-	block->x3 = block->x1 + (x3 * SQUIRE_XLENGTH);
-	block->y3 = block->y1 + (y3 * SQUIRE_YLENGTH);
-	block->x4 = block->x1 + (x4 * SQUIRE_XLENGTH);
-	block->y4 = block->y1 + (y4 * SQUIRE_YLENGTH);
-
-	colorBlock(block, COLOR_BLUE_BLOCK);
-}
-
-BLOCK calc_rotate(BLOCK *block, int rotate) {
-	int x1, x2, x3, x4;
-	int y1, y2, y3, y4;
-	BLOCK next = *block;
 
 
-	x2 = next.x2 - next.x1;
-	y2 = next.y2 - next.y1;
-	x3 = next.x3 - next.x1;
-	y3 = next.y3 - next.y1;
-	x4 = next.x4 - next.x1;
-	y4 = next.y4 - next.y1;
-	swap(&x2, &y2);
-	swap(&x3, &y3);
-	swap(&x4, &y4);
+	block.x2 = block.x1 + (x2 * SQUIRE_XLENGTH);
+	block.y2 = block.y1 + (y2 * SQUIRE_YLENGTH);
+	block.x3 = block.x1 + (x3 * SQUIRE_XLENGTH);
+	block.y3 = block.y1 + (y3 * SQUIRE_YLENGTH);
+	block.x4 = block.x1 + (x4 * SQUIRE_XLENGTH);
+	block.y4 = block.y1 + (y4 * SQUIRE_YLENGTH);
 
-	if ((rotate)%2) {
-		x2 *= -1;
-		y2 *= -1;
-		x3 *= -1;
-		y3 *= -1;
-	} else {
-		x4 *= -1;
-		y4 *= -1;
-	}
-
-	next.x2 = next.x1 + x2;
-	next.y2 = next.y1 + y2;
-	next.x3 = next.x1 + x3;
-	next.y3 = next.y1 + y3;
-	next.x4 = next.x1 + x4;
-	next.y4 = next.y1 + y4;
-
-	return next;
+	return block;
 
 }
 

@@ -19,5 +19,6 @@ void add_blockcolor();
 void generateBlock(BLOCK *Block, int y, int x, int kind);
 void mvBlock(BLOCK *Block, int dy, int dx);
 
-void rotateBlock(BLOCK *Block, int rotate);
+void rotateBlock(BLOCK *block, int rotate);
+BLOCK calc_rotate(BLOCK block, int rotate);
 void colorBlock(BLOCK *Block, short color);
