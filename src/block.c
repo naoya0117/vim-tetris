@@ -33,15 +33,21 @@ void colorBlock(BLOCK *block, short color) {
 
 void mvBlock(BLOCK *block, int dy, int dx) {
 	colorBlock(block, COLOR_BLACK_BLOCK);
-	block->x1 = block->x1 + dx * SQUIRE_XLENGTH;
-	block->y1 = block->y1 + dy * SQUIRE_YLENGTH;
-	block->x2 = block->x2 + dx * SQUIRE_XLENGTH;
-	block->y2 = block->y2 + dy * SQUIRE_YLENGTH;
-	block->x3 = block->x3 + dx * SQUIRE_XLENGTH;
-	block->y3 = block->y3 + dy * SQUIRE_YLENGTH;
-	block->x4 = block->x4 + dx * SQUIRE_XLENGTH;
-	block->y4 = block->y4 + dy * SQUIRE_YLENGTH;
+	*block = calc_move(*block, dy, dx);
 	colorBlock(block, COLOR_BLUE_BLOCK);
+}
+
+BLOCK calc_move(BLOCK block, int dy, int dx) {
+	block.x1 = block.x1 + dx * SQUIRE_XLENGTH;
+	block.y1 = block.y1 + dy * SQUIRE_YLENGTH;
+	block.x2 = block.x2 + dx * SQUIRE_XLENGTH;
+	block.y2 = block.y2 + dy * SQUIRE_YLENGTH;
+	block.x3 = block.x3 + dx * SQUIRE_XLENGTH;
+	block.y3 = block.y3 + dy * SQUIRE_YLENGTH;
+	block.x4 = block.x4 + dx * SQUIRE_XLENGTH;
+	block.y4 = block.y4 + dy * SQUIRE_YLENGTH;
+
+	return block;
 }
 
 void rotateBlock(BLOCK *block, int rotate) {

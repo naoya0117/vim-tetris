@@ -8,45 +8,54 @@
 #define GAME_YLENGTH 22
 #define MAX_COMMAND_LENGTH 32
 
+struct screen {
+    int x;
+    int y;
+} typedef SCREEN;
+
 
 
 void call_game();
-void draw_gameScreen(int base_y, int base_x);
-int tetris(int base_y, int base_x);
+void draw_gameScreen(SCREEN base);
+int tetris(SCREEN base);
 int isGameOver();
 void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH]);
 
 
+int get_scrx(int x, SCREEN base);
+int get_scry (int y, SCREEN base);
 
+
+int checkIsBlock(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int dy, int dx, SCREEN gameScreen);
 void call_tetris() {
     int max_x, max_y;
-    int gameScreen_x, gameScreen_y;
+    SCREEN gameScreen;
 
     add_blockcolor();
 
     getmaxyx(stdscr, max_y, max_x);
     
-    gameScreen_x = max_x /2 - GAME_XLENGTH;
-    gameScreen_y = max_y /10;
+    gameScreen.x = max_x /2 - GAME_XLENGTH;
+    gameScreen.y = max_y /10;
 
-    draw_gameScreen(gameScreen_y, gameScreen_x);
-    tetris(gameScreen_y, gameScreen_x);
+    draw_gameScreen(gameScreen);
+    tetris(gameScreen);
 
 };
 
-void draw_gameScreen(int basey, int basex) {
-   move(basey, basex);
+void draw_gameScreen(SCREEN base) {
+   move(base.y, base.x);
    hline(ACS_HLINE, GAME_XLENGTH - 1);
    vline(ACS_VLINE, GAME_YLENGTH - 1);
-   move (basey+GAME_YLENGTH -1 , basex);
+   move (base.y+GAME_YLENGTH -1 , base.x);
    hline(ACS_HLINE, GAME_XLENGTH);
-   move (basey, basex+(GAME_XLENGTH -1 )* 2);
+   move (base.y, base.x+(GAME_XLENGTH -1 )* 2);
    vline(ACS_VLINE, GAME_YLENGTH -1 );
    refresh();
 
 }
 
-int tetris(int base_y, int base_x) {
+int tetris(SCREEN base) {
     struct timeval start, end;
     double d_time = 0;
     gettimeofday(&start, NULL);
@@ -65,8 +74,10 @@ int tetris(int base_y, int base_x) {
 
     while(!isGameOver()) {
         block_x= GAME_XLENGTH/2, block_y = 3;
-        generateBlock(&focusedBlock, base_y +3, base_x +GAME_XLENGTH-2 , 0);
-        while (!isBlock[block_x][block_y+1]) {
+        generateBlock(&focusedBlock, base.y +3, base.x +GAME_XLENGTH-2 , 0);
+
+        while (!checkIsBlock(isBlock, focusedBlock, 1, 0, base)) {
+
             gettimeofday(&end, NULL);
             d_time =  (double)(end.tv_sec - start.tv_sec) + (double) (end.tv_usec -start.tv_usec) / (1000* 1000);
             if (d_time >= 0.6) {
@@ -108,3 +119,26 @@ void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH]) {
     }
 }
 
+int checkIsBlock(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int dy, int dx, SCREEN gameScreen) {
+    int x1, x2, x3, x4;
+    int y1, y2, y3, y4;
+
+    x1 = get_scrx(calc_move(block, dy, dx).x1, gameScreen);
+    y1 = get_scry(calc_move(block, dy, dx).y1, gameScreen);
+    x2 = get_scrx(calc_move(block, dy, dx).x2, gameScreen);
+    y2 = get_scry(calc_move(block, dy, dx).y2, gameScreen);
+    x3 = get_scrx(calc_move(block, dy, dx).x3, gameScreen);
+    y3 = get_scry(calc_move(block, dy, dx).y3, gameScreen);
+    x4 = get_scrx(calc_move(block, dy, dx).x4, gameScreen);
+    y4 = get_scry(calc_move(block, dy, dx).y4, gameScreen);
+
+    return isblock[x1][y1] || isblock[x2][y2]|| isblock[x3][y3]|| isblock[x4][y4];
+}
+
+
+int get_scrx(int x, SCREEN base) {
+    return (x - base.x)/SQUIRE_XLENGTH;
+}
+int get_scry(int y, SCREEN base) {
+    return (y - base.y)/SQUIRE_YLENGTH;
+}
