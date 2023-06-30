@@ -1,8 +1,6 @@
 #include <ncurses.h>
 #include "block.h"
 
-#define SQUIRE_XLENGTH 2
-#define SQUIRE_YLENGTH 1
 
 #define COLOR_BLACK_BLOCK 8
 #define COLOR_RED_BLOCK 9
@@ -79,13 +77,13 @@ BLOCK calc_rotate(BLOCK block, int rotate) {
 	swap(&x4, &y4);
 
 	if ((rotate+1)%2) {
+		x4 *= -1;
+		y4 *= -1;
+	} else {
 		x2 *= -1;
 		y2 *= -1;
 		x3 *= -1;
 		y3 *= -1;
-	} else {
-		x4 *= -1;
-		y4 *= -1;
 	}
 
 

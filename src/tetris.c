@@ -26,7 +26,10 @@ int get_scrx(int x, SCREEN base);
 int get_scry (int y, SCREEN base);
 
 
-int checkIsBlock(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int dy, int dx, SCREEN gameScreen);
+int canBlockMove(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int dy, int dx, SCREEN gameScreen);
+int canBlockRotate(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int rotate, SCREEN gameScreen);
+void stack_block(int isBlock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, SCREEN gameScreen);
+
 void call_tetris() {
     int max_x, max_y;
     SCREEN gameScreen;
@@ -67,38 +70,51 @@ int tetris(SCREEN base) {
 
     int ch;
     int block_x, block_y;
+    int dx = 0, dy = 0;
+
     timeout(600);
 
     rotate = 0;
     init_blockData(isBlock);
 
     while(!isGameOver()) {
-        block_x= GAME_XLENGTH/2, block_y = 3;
         generateBlock(&focusedBlock, base.y +3, base.x +GAME_XLENGTH-2 , 0);
 
-        while (!checkIsBlock(isBlock, focusedBlock, 1, 0, base)) {
+        while (canBlockMove(isBlock, focusedBlock, 1, 0, base)) {
+
+            dx = 0; dy = 0;
 
             gettimeofday(&end, NULL);
             d_time =  (double)(end.tv_sec - start.tv_sec) + (double) (end.tv_usec -start.tv_usec) / (1000* 1000);
             if (d_time >= 0.6) {
                 gettimeofday(&start, NULL);
-                mvBlock(&focusedBlock,1, 0 );
-                block_y++;
+
+                if (canBlockMove(isBlock, focusedBlock, dy + 1, dx, base))
+                    mvBlock(&focusedBlock, 1, 0);
                 d_time = 0;
             }
 
-
-            refresh();
             ch = getch();
 
             if(ch == ':') {
                 if (!call_command(0, cmd_buffer, MAX_COMMAND_LENGTH)) {
                     ;
                 }
+            } else if (ch == ' ' && canBlockRotate(isBlock, focusedBlock, rotate, base))  {
+                rotateBlock(&focusedBlock, rotate++);
+            } else if (ch == '\n' && canBlockMove(isBlock, focusedBlock, dy+1, dx, base)) {
+                dy = 1;
+            } else if (ch == 'h' && canBlockMove(isBlock, focusedBlock, dy, dx-1, base)) {
+                dx = -1;
+            } else if (ch == 'l' && canBlockMove(isBlock, focusedBlock, dy, dx+1, base)) {
+                dx = 1;
             }
-            else if (ch == ' ') rotateBlock(&focusedBlock, rotate++);
+            mvBlock(&focusedBlock,dy, dx );
+            refresh();
+
         }
         colorBlock(&focusedBlock, COLOR_WHITE_BLOCK);
+        stack_block(isBlock, focusedBlock, base);
     }
 
     return 0;
@@ -119,7 +135,7 @@ void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH]) {
     }
 }
 
-int checkIsBlock(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int dy, int dx, SCREEN gameScreen) {
+int canBlockMove(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int dy, int dx, SCREEN gameScreen) {
     int x1, x2, x3, x4;
     int y1, y2, y3, y4;
 
@@ -132,9 +148,44 @@ int checkIsBlock(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int dy, i
     x4 = get_scrx(calc_move(block, dy, dx).x4, gameScreen);
     y4 = get_scry(calc_move(block, dy, dx).y4, gameScreen);
 
-    return isblock[x1][y1] || isblock[x2][y2]|| isblock[x3][y3]|| isblock[x4][y4];
+    return !isblock[x1][y1] && !isblock[x2][y2]&& !isblock[x3][y3]&& !isblock[x4][y4];
 }
 
+
+int canBlockRotate(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int rotate, SCREEN gameScreen) {
+    int x1, x2, x3, x4;
+    int y1, y2, y3, y4;
+
+    x1 = get_scrx(calc_rotate(block, rotate).x1, gameScreen);
+    y1 = get_scry(calc_rotate(block, rotate).y1, gameScreen);
+    x2 = get_scrx(calc_rotate(block, rotate).x2, gameScreen);
+    y2 = get_scry(calc_rotate(block, rotate).y2, gameScreen);
+    x3 = get_scrx(calc_rotate(block, rotate).x3, gameScreen);
+    y3 = get_scry(calc_rotate(block, rotate).y3, gameScreen);
+    x4 = get_scrx(calc_rotate(block, rotate).x4, gameScreen);
+    y4 = get_scry(calc_rotate(block, rotate).y4, gameScreen);
+
+    return !isblock[x1][y1] && !isblock[x2][y2]&& !isblock[x3][y3]&& !isblock[x4][y4];
+}
+
+void stack_block(int isBlock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, SCREEN base) {
+    int x1, x2, x3, x4;
+    int y1, y2, y3, y4;
+
+    x1 = get_scrx(block.x1, base);
+    y1 = get_scry(block.y1, base);
+    x2 = get_scrx(block.x2, base);
+    y2 = get_scry(block.y2, base);
+    x3 = get_scrx(block.x3, base);
+    y3 = get_scry(block.y3, base);
+    x4 = get_scrx(block.x4, base);
+    y4 = get_scry(block.y4, base);
+
+    isBlock[x1][y1] = 1;
+    isBlock[x2][y2] = 1;
+    isBlock[x3][y3] = 1;
+    isBlock[x4][y4] = 1;
+}
 
 int get_scrx(int x, SCREEN base) {
     return (x - base.x)/SQUIRE_XLENGTH;
