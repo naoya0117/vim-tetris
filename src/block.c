@@ -21,6 +21,66 @@ void generateBlock(BLOCK *block, int y, int x, int kind) {
 		block->x4 = x+ SQUIRE_XLENGTH;
 		block->y4 = y;
 	}
+	if(kind == 1) {
+		block->x1 = x;
+		block->y1 = y;
+		block->x2 = x;
+		block->y2 = y- SQUIRE_YLENGTH;
+		block->x3 = x;
+		block->y3 = y+ SQUIRE_YLENGTH;
+		block->x4 = x;
+		block->y4 = y+ SQUIRE_YLENGTH * 2;
+	}
+	if(kind == 2) {
+		block->x1 = x;
+		block->y1 = y;
+		block->x2 = x - SQUIRE_XLENGTH;
+		block->y2 = y;
+		block->x3 = x + SQUIRE_XLENGTH;
+		block->y3 = y;
+		block->x4 = x ;
+		block->y4 = y - SQUIRE_YLENGTH;
+	}
+	if(kind == 3) {
+		block->x1 = x;
+		block->y1 = y;
+		block->x2 = x;
+		block->y2 = y- SQUIRE_YLENGTH;
+		block->x3 = x;
+		block->y3 = y- SQUIRE_YLENGTH * 2;
+		block->x4 = x- SQUIRE_XLENGTH;
+		block->y4 = y;
+	}
+	if(kind == 4) {
+		block->x1 = x;
+		block->y1 = y;
+		block->x2 = x;
+		block->y2 = y - SQUIRE_YLENGTH;
+		block->x3 = x - SQUIRE_XLENGTH;
+		block->y3 = y - SQUIRE_YLENGTH;
+		block->x4 = x + SQUIRE_XLENGTH;
+		block->y4 = y;
+	}
+	if (kind == 5) {
+		block->x1 = x;
+		block->y1 = y;
+		block->x2 = x;
+		block->y2 = y - SQUIRE_YLENGTH;
+		block->x3 = x + SQUIRE_XLENGTH;
+		block->y3 = y - SQUIRE_YLENGTH;
+		block->x4 = x - SQUIRE_XLENGTH;
+		block->y4 = y;
+	}
+	if (kind == 6) {
+		block->x1 = x;
+		block->y1 = y;
+		block->x2 = x + SQUIRE_XLENGTH;
+		block->y2 = y;
+		block->x3 = x;
+		block->y3 = y - SQUIRE_YLENGTH;
+		block->x4 = x + SQUIRE_XLENGTH;
+		block->y4 = y - SQUIRE_YLENGTH;
+	}
 }
 void colorBlock(BLOCK *block, short color) {
 	squire(block->y1, block->x1, color);
@@ -76,15 +136,10 @@ BLOCK calc_rotate(BLOCK block, int rotate) {
 	swap(&x3, &y3);
 	swap(&x4, &y4);
 
-	if ((rotate+1)%2) {
-		x4 *= -1;
-		y4 *= -1;
-	} else {
-		x2 *= -1;
-		y2 *= -1;
-		x3 *= -1;
-		y3 *= -1;
-	}
+
+	y2 *= -1;
+	y3 *= -1;
+	y4 *= -1;
 
 
 

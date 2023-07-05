@@ -1,6 +1,8 @@
 #include <ncurses.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/time.h>
+#include <time.h>
 #include "command.h"
 #include "block.h"
 
@@ -59,6 +61,8 @@ void draw_gameScreen(SCREEN base) {
 }
 
 int tetris(SCREEN base) {
+    srand((unsigned int)time(NULL));
+
     struct timeval start, end;
     double d_time = 0;
     gettimeofday(&start, NULL);
@@ -66,6 +70,7 @@ int tetris(SCREEN base) {
 
     BLOCK focusedBlock;
     int rotate;
+    int kind;
     int isBlock[GAME_XLENGTH][GAME_YLENGTH];
 
     int ch;
@@ -78,7 +83,8 @@ int tetris(SCREEN base) {
     init_blockData(isBlock);
 
     while(!isGameOver()) {
-        generateBlock(&focusedBlock, base.y +3, base.x +GAME_XLENGTH-2 , 0);
+        kind = rand() % 7;
+        generateBlock(&focusedBlock, base.y +3, base.x +GAME_XLENGTH-2 , kind);
 
         while (canBlockMove(isBlock, focusedBlock, 1, 0, base)) {
 
