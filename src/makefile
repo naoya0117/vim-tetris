@@ -1,6 +1,6 @@
-main : main.o tetris.o menu.o help.o cursor.o ranking.o command.o block.o
+main : main.o tetris.o menu.o help.o cursor.o ranking.o command.o block.o 
 	gcc -o main main.o tetris.o menu.o cursor.o ranking.o help.o command.o block.o -lncursesw
-main.o : main.c menu.h
+main.o : main.c menu.h command.h
 	gcc -c main.c 
 tetris.o : tetris.c block.h command.h
 	gcc -c tetris.c

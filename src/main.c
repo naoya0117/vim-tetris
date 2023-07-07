@@ -3,6 +3,7 @@
 #include <ncurses.h>
 #include <locale.h>
 #include "menu.h"
+#include "command.h"
 
 void error(char *msg);
 
@@ -13,8 +14,11 @@ int main(int argc, char **argv) {
    setlocale(LC_ALL, "");
 
    initscr();
-   keypad(stdscr, FALSE);
+   cmdwin = create_commandwin();
+
    noecho();
+
+   keypad(stdscr, FALSE);
    start_color();
    bkgd(COLOR_PAIR(COLOR_BLACK));
 
@@ -24,6 +28,7 @@ int main(int argc, char **argv) {
 
    menu();
 
+   delwin(cmdwin);
    endwin();
 
    return 0;

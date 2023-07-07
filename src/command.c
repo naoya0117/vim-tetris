@@ -2,15 +2,32 @@
 #include <stdlib.h>
 #include <string.h>
 #include "help.h"
+#include <pthread.h>
 
-void get_command(char *buffer, int length);
-void clear_commandArea();
-void show_message(char *msg);
 
+WINDOW *cmdwin;
+pthread_mutex_t mutex;
 struct position {
    int x;
    int y;
 } typedef POSITION;
+void get_command(char *buffer, int length);
+void clear_commandArea();
+void show_message(char *msg);
+POSITION calc_commandArea();
+
+
+WINDOW *create_commandwin() {
+  WINDOW *win;
+  int y, x;
+  win = subwin(stdscr, 1, 50 , calc_commandArea().y, calc_commandArea().x);
+  getyx(win, y, x);
+  fprintf(stderr, "HI:subwin(%d, %d), cursor(%d,%d)", getmaxy(win),getmaxx(win), y, x);
+  wmove(win, calc_commandArea().y, calc_commandArea().x);
+
+  return win;
+}
+
 
 int call_command(int isallowed, char str[], int length) {
   char *cmd;
@@ -22,9 +39,13 @@ int call_command(int isallowed, char str[], int length) {
 
   clear_commandArea();
   get_command(str, length);
+  int y, x;
+  getyx(cmdwin, y, x);
+
+  getyx(cmdwin, y, x);
 
 
-  if (strlen(str) == 0) return find;
+  if (strlen(str) == 0) return find = 1;
 
   if (strchr(str, '!')) {
     force = 1;
@@ -35,7 +56,7 @@ int call_command(int isallowed, char str[], int length) {
     find = 1;
     if (isallowed || force) {
          clear();
-         refresh();
+         wrefresh(cmdwin);
          exit(0);
      } else {
       show_message("エラー:ファイルが最新ではないため終了できません。強制実行するには!を加えてください。");
@@ -51,41 +72,54 @@ int call_command(int isallowed, char str[], int length) {
 }
 
 POSITION calc_commandArea() {
-   int max_y, max_x;
+  int max_y, max_x;
   POSITION pos;
   getmaxyx(stdscr, max_y, max_x);
   pos.x = 0;
-  pos.y = max_y -1;
+  pos.y = max_y - 1;
 
   return pos;
 }
 
 void get_command(char *buffer, int length) {
   int ch;
-  keypad(stdscr, TRUE);
+  keypad(cmdwin, TRUE);
   POSITION inp_pos;
+  inp_pos.x = 0;
+  inp_pos.y = getmaxy(cmdwin) - 1; 
+
+  clear_commandArea();
 
   char *p = buffer;
 
-  mvaddch(inp_pos.y, inp_pos.x++, ':');
+  wmove(cmdwin, inp_pos.y , 0);
+  wmove(cmdwin, getmaxy(cmdwin) - 1 , 0);
+  waddch(cmdwin , ':');
+  wrefresh(cmdwin);
+  inp_pos.x++;
 
-  while((ch = getch()) != '\n') {
+  while((ch = wgetch(cmdwin)) != '\n') {
 
     if(ch == KEY_BACKSPACE || ch == 127) { //c1-byodでbackspaceは'^?'(127)
       if (p > buffer) {
-        mvdelch(inp_pos.y, --inp_pos.x);
+        wmove(cmdwin, inp_pos.y, --inp_pos.x);
+        wdelch(cmdwin);
         *--p = '\0';
       } else if (p <= buffer) {
-        mvdelch(inp_pos.y, --inp_pos.x);
+        wmove(cmdwin, inp_pos.y, --inp_pos.x);
+        wdelch(cmdwin);
+        wrefresh(cmdwin);
         break;
       }
     } else {
       if (p >= buffer + length - 1)
         continue;
-      mvaddch(inp_pos.y, inp_pos.x++, ch);
+      wmove(cmdwin, inp_pos.y, inp_pos.x);
+      waddch(cmdwin, ch);
+      inp_pos.x++;
       *p++ = ch;
     }
-    refresh();
+    wrefresh(cmdwin);
 
   }
 
@@ -95,20 +129,22 @@ void get_command(char *buffer, int length) {
 
 
 void clear_commandArea () {
-  POSITION cmd_area = calc_commandArea();
+  int y = getmaxy(cmdwin) - 1;
   int x;
-  int start_x = cmd_area.x;
-  int end_x = getmaxx(stdscr);
+  int start_x = 0;
+  int end_x = getmaxx(cmdwin);
 
   for (x=start_x; x<end_x; x++) {
-    mvaddch(cmd_area.y, x , ' ');
+    wmove(cmdwin, y, x);
+    waddch(cmdwin, ' ');
   }
 }
 
 void show_message(char *msg) {
   POSITION cmd_area=calc_commandArea();
   attron(COLOR_PAIR(COLOR_RED | A_BOLD));
-  mvaddstr(cmd_area.y, cmd_area.x, msg );
+  wmove(cmdwin, cmd_area.y, cmd_area.x);
+  waddstr(cmdwin , msg );
   attroff(COLOR_PAIR(COLOR_RED | A_BOLD));
-  refresh();
+  wrefresh(cmdwin);
 }
