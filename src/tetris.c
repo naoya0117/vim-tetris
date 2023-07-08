@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include "mutex_shared.h"
 
 #define GAME_XLENGTH 12
 #define GAME_YLENGTH 22
@@ -19,6 +20,7 @@ struct screen {
 struct thread_args {
   char *buffer;
   int *iscmdmode;
+  int result;
 } typedef THREAD_ARGS;
 
 void call_game();
@@ -52,7 +54,7 @@ void call_tetris() {
 
   draw_gameScreen(gameScreen);
   tetris(gameScreen);
-};
+}
 
 void draw_gameScreen(SCREEN base) {
   move(base.y, base.x);
@@ -70,6 +72,7 @@ int tetris(SCREEN base) {
   int thread_flag = 0;
   void* thread_result;
   int command_mode = 0;
+  
 
 
   srand((unsigned int)time(NULL));
@@ -89,15 +92,14 @@ int tetris(SCREEN base) {
   int dx = 0, dy = 0;
   int ret;
 
-  timeout(600);
 
   rotate = 0;
   init_blockData(isBlock);
 
   while (!isGameOver()) {
     kind = rand() % 7;
-    generateBlock(&focusedBlock, base.y + 3, base.x + GAME_XLENGTH - 2, kind);
 
+    generateBlock(&focusedBlock, base.y + 3, base.x + GAME_XLENGTH - 2, kind);
     while (canBlockMove(isBlock, focusedBlock, 1, 0, base)) {
 
       dx = 0;
@@ -109,47 +111,52 @@ int tetris(SCREEN base) {
       if (d_time >= 0.6) {
         gettimeofday(&start, NULL);
 
-        if (canBlockMove(isBlock, focusedBlock, dy + 1, dx, base))
+        if (canBlockMove(isBlock, focusedBlock, dy + 1, dx, base)) {
+          pthread_mutex_lock(&mutex);
           mvBlock(&focusedBlock, 1, 0);
+          pthread_mutex_unlock(&mutex);
+        }
         d_time = 0;
       }
-
-      ch = '\0';
-
-
       if (!command_mode) {
         if (thread_flag) {
           thread_flag = 0;
-          if (!thread_result) {
-            ;
+          pthread_join(command_thread, thread_result);
+          if (!command_args.result) {
           }
         }
+        timeout(600);
         ch = getch();
         if (ch == ':' && !thread_flag) {
             command_args.buffer = cmd_buffer;
             command_args.iscmdmode = &command_mode;
+            command_mode = 1;
             thread_flag = 1;
             pthread_create(&command_thread, NULL,
                                 command, (void *)&command_args);
         } else if (ch == ' ' &&
-                    canBlockRotate(isBlock, focusedBlock, rotate, base)) {
+            canBlockRotate(isBlock, focusedBlock, rotate, base)) {
             rotateBlock(&focusedBlock, rotate++);
         } else if (ch == '\n' &&
-                    canBlockMove(isBlock, focusedBlock, dy + 1, dx, base)) {
+            canBlockMove(isBlock, focusedBlock, dy + 1, dx, base)) {
             dy = 1;
         } else if (ch == 'h' &&
-                    canBlockMove(isBlock, focusedBlock, dy, dx - 1, base)) {
+            canBlockMove(isBlock, focusedBlock, dy, dx - 1, base)) {
             dx = -1;
         } else if (ch == 'l' &&
-                    canBlockMove(isBlock, focusedBlock, dy, dx + 1, base)) {
+            canBlockMove(isBlock, focusedBlock, dy, dx + 1, base)) {
             dx = 1;
         }
       }
+        pthread_mutex_lock(&mutex);
         mvBlock(&focusedBlock, dy, dx);
         refresh();
+        pthread_mutex_unlock(&mutex);
     }
+    pthread_mutex_lock(&mutex);
     colorBlock(&focusedBlock, COLOR_WHITE_BLOCK);
     stack_block(isBlock, focusedBlock, base);
+    pthread_mutex_unlock(&mutex);
   }
 
   return 0;
@@ -230,9 +237,8 @@ int get_scry(int y, SCREEN base) { return (y - base.y) / SQUIRE_YLENGTH; }
 void *command(void * arg) {
   int result;
   THREAD_ARGS *args = (THREAD_ARGS*)arg;
-  *args->iscmdmode = 1;
+  *(args->iscmdmode) = 1;
   result = call_command(0, (*args).buffer, MAX_COMMAND_LENGTH);
-
-  *args->iscmdmode = 0;
+  *(args->iscmdmode) = 0;
   pthread_exit((void *)(intptr_t)result);
 }
