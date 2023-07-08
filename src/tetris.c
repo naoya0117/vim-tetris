@@ -43,7 +43,7 @@ void stack_block(int isBlock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block,
 
 void *command(void *args);
 void colorRow(int y, SCREEN screen,short color) ;
-void checkFilledRow(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) ;
+void checkRowFull(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) ;
 void deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) ;
 void call_tetris() {
   int max_x, max_y;
@@ -176,7 +176,7 @@ int tetris(SCREEN base) {
     pthread_mutex_lock(&mutex);
     colorBlock(&focusedBlock, COLOR_WHITE_BLOCK);
     stack_block(isBlock, focusedBlock, base);
-    checkFilledRow(isBlock,isRowFull,base);
+    checkRowFull(isBlock,isRowFull,base);
     pthread_mutex_unlock(&mutex);
   }
 
@@ -268,7 +268,7 @@ void *command(void * arg) {
 }
 
 
-void checkFilledRow(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) {
+void checkRowFull(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) {
    int flag;
    int x, y;
 
@@ -328,4 +328,5 @@ void deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], in
       else squire(get_absy(y, base), get_absx(x, base),COLOR_BLACK_BLOCK);
     }
   }
+  checkRowFull(isBlock, isRowFull, base);
 }
