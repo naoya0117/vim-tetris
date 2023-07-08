@@ -2,11 +2,11 @@ main : main.o tetris.o menu.o help.o cursor.o ranking.o command.o block.o
 	gcc -o main main.o tetris.o menu.o cursor.o ranking.o help.o command.o block.o -lncursesw
 main.o : main.c menu.h command.h
 	gcc -c main.c 
-tetris.o : tetris.c block.h command.h
+tetris.o : tetris.c block.h command.h mutex_shared.h
 	gcc -c tetris.c
 menu.o : menu.c tetris.h ranking.h cursor.h command.h
 	gcc -c menu.c
-command.o : command.c help.h
+command.o : command.c help.h mutex_shared.h
 	gcc -c command.c
 help.o : help.c help.h
 	gcc -c help.c
