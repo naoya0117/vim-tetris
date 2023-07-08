@@ -44,6 +44,7 @@ void stack_block(int isBlock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block,
 void *command(void *args);
 void colorRow(int y, SCREEN screen,short color) ;
 void checkFilledRow(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) ;
+void deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) ;
 void call_tetris() {
   int max_x, max_y;
   SCREEN gameScreen;
@@ -100,6 +101,7 @@ int tetris(SCREEN base) {
   int dx = 0, dy = 0;
   int ret;
 
+  int delete_flag = 0;
 
   rotate = 0;
   init_blockData(isBlock, isRowFull);
@@ -158,6 +160,12 @@ int tetris(SCREEN base) {
           mvcursor(&cursor, -1);
         } else if (ch == 'j' && get_scry(cursor.y, base) < GAME_YLENGTH - 2) {
           mvcursor(&cursor, 1);
+        } else if (ch == 'd') {
+          if (delete_flag == 0) delete_flag = 1;
+          else {
+              deleteRow(get_scry(cursor.y, base), get_scry(cursor.y, base), isBlock, isRowFull, base);
+              delete_flag = 0;
+          }
         }
       }
         pthread_mutex_lock(&mutex);
@@ -287,3 +295,37 @@ void colorRow(int y, SCREEN screen,short color) {
 
 int get_absx(int scrx, SCREEN base) { return base.x + scrx * SQUIRE_XLENGTH;};
 int get_absy(int scry,SCREEN base) { return base.y + scry * SQUIRE_YLENGTH;};
+
+void deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) {
+  int x,y;
+  int cnt=0;
+
+  if (starty > endy) {
+    int tmp = starty;
+    starty = endy;
+    endy = tmp;
+  }
+
+  y = starty;
+  while (isRowFull[y])y++;
+  if (y<=endy) return;
+
+  for (y = starty; y <= endy ; y++) {
+    colorRow(y, base, COLOR_BLACK_BLOCK);
+    isRowFull[y] = 0;
+    cnt++;
+    for (x = 1; x < GAME_XLENGTH - 1; x++) {
+      isBlock[x][y] = 0;
+    }
+  }
+
+  for (y = endy; y>= cnt + 1; y--) {
+    colorRow(y-cnt,base, COLOR_BLACK_BLOCK);
+    for (x = 1; x < GAME_XLENGTH -1 ; x++) {
+      isBlock[x][y] = isBlock[x][y-cnt];
+      isBlock[x][y-cnt] = 0;
+      if(isBlock[x][y]) squire(get_absy(y, base), get_absx(x, base),COLOR_WHITE_BLOCK);
+      else squire(get_absy(y, base), get_absx(x, base),COLOR_BLACK_BLOCK);
+    }
+  }
+}
