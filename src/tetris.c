@@ -7,6 +7,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "mutex_shared.h"
+#include "cursor.h"
 
 #define GAME_XLENGTH 12
 #define GAME_YLENGTH 22
@@ -74,6 +75,10 @@ int tetris(SCREEN base) {
   int thread_flag = 0;
   void* thread_result;
   int command_mode = 0;
+
+  CURSOR cursor;
+
+  setCursor(&cursor, base.y + GAME_YLENGTH/2, base.x - 1) ;
   
 
 
@@ -111,7 +116,7 @@ int tetris(SCREEN base) {
       gettimeofday(&end, NULL);
       d_time = (double)(end.tv_sec - start.tv_sec) +
                (double)(end.tv_usec - start.tv_usec) / (1000 * 1000);
-      if (d_time >= 0.6) {
+      if (d_time >= 0.4) {
         gettimeofday(&start, NULL);
 
         if (canBlockMove(isBlock, focusedBlock, dy + 1, dx, base)) {
@@ -128,7 +133,7 @@ int tetris(SCREEN base) {
           if (!command_args.result) {
           }
         }
-        timeout(600);
+        timeout(400);
         ch = getch();
         if (ch == ':' && !thread_flag) {
             command_args.buffer = cmd_buffer;
@@ -149,6 +154,10 @@ int tetris(SCREEN base) {
         } else if (ch == 'l' &&
             canBlockMove(isBlock, focusedBlock, dy, dx + 1, base)) {
             dx = 1;
+        } else if (ch == 'k' && get_scry(cursor.y, base) > 1) {
+          mvcursor(&cursor, -1);
+        } else if (ch == 'j' && get_scry(cursor.y, base) < GAME_YLENGTH - 2) {
+          mvcursor(&cursor, 1);
         }
       }
         pthread_mutex_lock(&mutex);
