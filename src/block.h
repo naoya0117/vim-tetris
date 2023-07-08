@@ -25,3 +25,5 @@ BLOCK calc_move(BLOCK block, int dy, int dx);
 void rotateBlock(BLOCK *block, int rotate);
 BLOCK calc_rotate(BLOCK block, int rotate);
 void colorBlock(BLOCK *Block, short color);
+
+void squire(int y, int x, short color);

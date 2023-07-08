@@ -27,11 +27,12 @@ void call_game();
 void draw_gameScreen(SCREEN base);
 int tetris(SCREEN base);
 int isGameOver();
-void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH]);
+void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[]);
 
 int get_scrx(int x, SCREEN base);
 int get_scry(int y, SCREEN base);
-
+int get_absx(int scrx, SCREEN base);
+int get_absy(int scry,SCREEN base);
 int canBlockMove(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block, int dy,
                  int dx, SCREEN gameScreen);
 int canBlockRotate(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block,
@@ -40,7 +41,8 @@ void stack_block(int isBlock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block,
                  SCREEN gameScreen);
 
 void *command(void *args);
-
+void colorRow(int y, SCREEN screen,short color) ;
+void checkFilledRow(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) ;
 void call_tetris() {
   int max_x, max_y;
   SCREEN gameScreen;
@@ -86,6 +88,7 @@ int tetris(SCREEN base) {
   int rotate;
   int kind;
   int isBlock[GAME_XLENGTH][GAME_YLENGTH];
+  int isRowFull[GAME_YLENGTH];
 
   int ch;
   int block_x, block_y;
@@ -94,7 +97,7 @@ int tetris(SCREEN base) {
 
 
   rotate = 0;
-  init_blockData(isBlock);
+  init_blockData(isBlock, isRowFull);
 
   while (!isGameOver()) {
     kind = rand() % 7;
@@ -121,7 +124,7 @@ int tetris(SCREEN base) {
       if (!command_mode) {
         if (thread_flag) {
           thread_flag = 0;
-          pthread_join(command_thread, thread_result);
+          pthread_join(command_thread, NULL);
           if (!command_args.result) {
           }
         }
@@ -156,6 +159,7 @@ int tetris(SCREEN base) {
     pthread_mutex_lock(&mutex);
     colorBlock(&focusedBlock, COLOR_WHITE_BLOCK);
     stack_block(isBlock, focusedBlock, base);
+    checkFilledRow(isBlock,isRowFull,base);
     pthread_mutex_unlock(&mutex);
   }
 
@@ -164,7 +168,7 @@ int tetris(SCREEN base) {
 
 int isGameOver() { return 0; }
 
-void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH]) {
+void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[]) {
   for (int x = 0; x < GAME_XLENGTH; x++) {
     for (int y = 0; y < GAME_YLENGTH; y++) {
       if (x == 0 || x == GAME_XLENGTH - 1 || y == GAME_YLENGTH - 1)
@@ -172,6 +176,9 @@ void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH]) {
       else
         isblock[x][y] = 0;
     }
+  }
+  for (int y = 0; y< GAME_YLENGTH; y++) {
+    isRowFull[y] = 0;
   }
 }
 
@@ -238,7 +245,36 @@ void *command(void * arg) {
   int result;
   THREAD_ARGS *args = (THREAD_ARGS*)arg;
   *(args->iscmdmode) = 1;
-  result = call_command(0, (*args).buffer, MAX_COMMAND_LENGTH);
+  args->result = call_command(0, (*args).buffer, MAX_COMMAND_LENGTH);
   *(args->iscmdmode) = 0;
-  pthread_exit((void *)(intptr_t)result);
+  pthread_exit(NULL);
 }
+
+
+void checkFilledRow(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) {
+   int flag;
+   int x, y;
+
+   for (y=GAME_YLENGTH-2; y>=1; y--) {
+      flag = 1;
+      for (x=GAME_XLENGTH-2; x>=1; x--) {
+         if(!isBlock[x][y])
+            flag = 0;
+      }
+      if (flag) {
+         isRowFull[y] = 1;
+         colorRow(y, base, COLOR_RED_BLOCK);
+      }
+   }
+
+}
+
+void colorRow(int y, SCREEN screen,short color) {
+  int x;
+  for (x = 1; x<GAME_XLENGTH-1; x++) {
+    squire(get_absy(y, screen), get_absx(x, screen), color);
+  }
+}
+
+int get_absx(int scrx, SCREEN base) { return base.x + scrx * SQUIRE_XLENGTH;};
+int get_absy(int scry,SCREEN base) { return base.y + scry * SQUIRE_YLENGTH;};
