@@ -101,7 +101,10 @@ int tetris(SCREEN base) {
   int dx = 0, dy = 0;
   int ret;
 
+  int delete_y = 0;
+
   int delete_flag = 0;
+  int virtual_mode = 0;
 
   rotate = 0;
   init_blockData(isBlock, isRowFull);
@@ -161,11 +164,24 @@ int tetris(SCREEN base) {
         } else if (ch == 'j' && get_scry(cursor.y, base) < GAME_YLENGTH - 2) {
           mvcursor(&cursor, 1);
         } else if (ch == 'd') {
-          if (delete_flag == 0) delete_flag = 1;
+          if (!delete_flag) delete_flag = 1;
           else {
-              deleteRow(get_scry(cursor.y, base), get_scry(cursor.y, base), isBlock, isRowFull, base);
+              if (!delete_y) delete_y = get_scry(cursor.y, base);
+              deleteRow(get_scry(cursor.y, base), delete_y, isBlock, isRowFull, base);
               delete_flag = 0;
+              delete_y = 0;
+              virtual_mode = 0;
           }
+        } else if (ch == 'V') {
+          if (virtual_mode) {
+          virtual_mode = 0;
+          delete_y = 0;
+          } else {
+            delete_flag = 1;
+            virtual_mode = 1;
+            delete_y = get_scry(cursor.y, base);
+          }
+
         }
       }
         pthread_mutex_lock(&mutex);
