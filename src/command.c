@@ -7,13 +7,14 @@
 
 WINDOW *cmdwin;
 pthread_mutex_t mutex;
+void init_sharedmutex() {
+  pthread_mutex_init(&mutex, NULL);
+}
 struct position {
    int x;
    int y;
 } typedef POSITION;
-
 void get_command(char *buffer, int length);
-void clear_commandArea();
 void show_message(char *msg);
 POSITION calc_commandArea();
 
@@ -21,10 +22,6 @@ POSITION calc_commandArea();
 WINDOW *create_commandwin() {
 
   return subwin(stdscr, 1, 50 , calc_commandArea().y, calc_commandArea().x);
-}
-
-void init_sharedmutex() {
-  pthread_mutex_init(&mutex,NULL);
 }
 
 
@@ -36,8 +33,14 @@ int call_command(int isallowed, char str[], int length) {
   memset(str, '\0', length);
 
 
-  clear_commandArea();
+  pthread_mutex_lock(&mutex);
+  wclear(cmdwin);
+  pthread_mutex_unlock(&mutex);
   get_command(str, length);
+  int y, x;
+  getyx(cmdwin, y, x);
+
+  getyx(cmdwin, y, x);
 
 
   if (strlen(str) == 0) return find = 1;
@@ -50,13 +53,13 @@ int call_command(int isallowed, char str[], int length) {
   if (!strcmp(str, "q") || !strcmp(str, "quit")) {
     find = 1;
     if (isallowed || force) {
-         pthread_mutex_lock(&mutex);
-         wrefresh(cmdwin);
-         pthread_mutex_unlock(&mutex);
-         clear();
+        pthread_mutex_lock(&mutex);
+        wclear(cmdwin);
+        clear();
+        pthread_mutex_unlock(&mutex);
          exit(0);
      } else {
-        show_message("エラー:ファイルが最新ではないため終了できません。強制実行するには!を加えてください。");
+      show_message("エラー:ファイルが最新ではないため終了できません。強制実行するには!を加えてください。");
      }
   }
 
@@ -73,31 +76,24 @@ POSITION calc_commandArea() {
   POSITION pos;
   pthread_mutex_lock(&mutex);
   getmaxyx(stdscr, max_y, max_x);
-  pthread_mutex_unlock(&mutex);
   pos.x = 0;
   pos.y = max_y - 1;
-
-  return pos;
-}
-
-POSITION init_editposition() {
-  POSITION pos;
-  pthread_mutex_lock(&mutex);
-  pos.x = 0;
-  pos.y = getmaxy(cmdwin) - 1;
   pthread_mutex_unlock(&mutex);
+
   return pos;
 }
 
 void get_command(char *buffer, int length) {
   int ch;
-  POSITION inp_pos = init_editposition();
-
-  clear_commandArea();
+  keypad(cmdwin, TRUE);
+  POSITION inp_pos;
+  inp_pos.x = 0;
+  inp_pos.y = getmaxy(cmdwin) - 1; 
 
   char *p = buffer;
 
   pthread_mutex_lock(&mutex);
+  wclear(cmdwin);
   wmove(cmdwin, inp_pos.y , inp_pos.x);
   waddch(cmdwin , ':');
   wrefresh(cmdwin);
@@ -105,9 +101,10 @@ void get_command(char *buffer, int length) {
 
   inp_pos.x++;
 
-  timeout(-1);
-
-  while((ch = getch()) != '\n') {
+  while((ch = wgetch(cmdwin)) != '\n') {
+    if (ch == 27) {
+      return;
+    }
 
     if(ch == KEY_BACKSPACE || ch == 127) { //c1-byodでbackspaceは'^?'(127)
       if (p > buffer) {
@@ -137,7 +134,6 @@ void get_command(char *buffer, int length) {
     pthread_mutex_lock(&mutex);
     wrefresh(cmdwin);
     pthread_mutex_unlock(&mutex);
-
   }
 
 
@@ -145,24 +141,10 @@ void get_command(char *buffer, int length) {
 
 
 
-void clear_commandArea () {
-  int y = init_editposition().y;
-  int x;
-  int start_x = 0;
-  int end_x = getmaxx(cmdwin);
-
-  pthread_mutex_lock(&mutex);
-  for (x=start_x; x<end_x; x++) {
-    wmove(cmdwin, y, x);
-    waddch(cmdwin, ' ');
-    wrefresh(cmdwin);
-  }
-  pthread_mutex_unlock(&mutex);
-}
 
 void show_message(char *msg) {
-  POSITION cmd_area=init_editposition();
-  clear_commandArea();
+  POSITION cmd_area=calc_commandArea();
+  wclear(cmdwin);
   pthread_mutex_lock(&mutex);
   attron(COLOR_PAIR(COLOR_RED | A_BOLD));
   wmove(cmdwin, cmd_area.y, cmd_area.x);
