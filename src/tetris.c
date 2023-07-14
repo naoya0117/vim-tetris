@@ -105,9 +105,12 @@ int tetris(SCREEN base) {
 
   int delete_flag = 0;
   int virtual_mode = 0;
+  int insertion_mode = 1;
 
   rotate = 0;
   init_blockData(isBlock, isRowFull);
+
+  show_message("挿入モード:h,l,j,kでブロックを動かせます");
 
   while (!isGameOver()) {
     kind = rand() % 7;
@@ -147,41 +150,52 @@ int tetris(SCREEN base) {
             thread_flag = 1;
             pthread_create(&command_thread, NULL,
                                 command, (void *)&command_args);
-        } else if (ch == ' ' &&
-            canBlockRotate(isBlock, focusedBlock, rotate, base)) {
-            rotateBlock(&focusedBlock, rotate++);
-        } else if (ch == '\n' &&
-            canBlockMove(isBlock, focusedBlock, dy + 1, dx, base)) {
-            dy = 1;
-        } else if (ch == 'h' &&
-            canBlockMove(isBlock, focusedBlock, dy, dx - 1, base)) {
-            dx = -1;
-        } else if (ch == 'l' &&
-            canBlockMove(isBlock, focusedBlock, dy, dx + 1, base)) {
-            dx = 1;
-        } else if (ch == 'k' && get_scry(cursor.y, base) > 1) {
-          mvcursor(&cursor, -1);
-        } else if (ch == 'j' && get_scry(cursor.y, base) < GAME_YLENGTH - 2) {
-          mvcursor(&cursor, 1);
-        } else if (ch == 'd') {
-          if (!delete_flag) delete_flag = 1;
-          else {
-              if (!delete_y) delete_y = get_scry(cursor.y, base);
-              deleteRow(get_scry(cursor.y, base), delete_y, isBlock, isRowFull, base);
-              delete_flag = 0;
-              delete_y = 0;
-              virtual_mode = 0;
+        } else if (insertion_mode) {
+          if (ch == 'k' &&
+              canBlockRotate(isBlock, focusedBlock, rotate, base)) {
+              rotateBlock(&focusedBlock, rotate++);
+          } else if (ch == 'j' &&
+              canBlockMove(isBlock, focusedBlock, dy + 1, dx, base)) {
+              dy = 1;
+          } else if (ch == 'h' &&
+              canBlockMove(isBlock, focusedBlock, dy, dx - 1, base)) {
+              dx = -1;
+          } else if (ch == 'l' &&
+              canBlockMove(isBlock, focusedBlock, dy, dx + 1, base)) {
+              dx = 1;
+          } else if (ch == 27) {
+              insertion_mode = 0;
+              show_message("通常モード:j,kでカーソル移動、ddで一行削除");
           }
-        } else if (ch == 'V') {
-          if (virtual_mode) {
-          virtual_mode = 0;
-          delete_y = 0;
-          } else {
-            delete_flag = 1;
-            virtual_mode = 1;
-            delete_y = get_scry(cursor.y, base);
-          }
+        } else {
+          if (ch == 'k' && get_scry(cursor.y, base) > 1) {
+            mvcursor(&cursor, -1);
+          } else if (ch == 'j' && get_scry(cursor.y, base) < GAME_YLENGTH - 2) {
+            mvcursor(&cursor, 1);
+          } else if (ch == 'd') {
+            if (!delete_flag) delete_flag = 1;
+            else {
+                if (!delete_y) delete_y = get_scry(cursor.y, base);
 
+                deleteRow(get_scry(cursor.y, base), delete_y, isBlock, isRowFull, base);
+                delete_flag = 0;
+                delete_y = 0;
+                virtual_mode = 0;
+            }
+          } else if (ch == 'V') {
+            if (virtual_mode) {
+            virtual_mode = 0;
+            delete_y = 0;
+            } else {
+              delete_flag = 1;
+              virtual_mode = 1;
+              delete_y = get_scry(cursor.y, base);
+            }
+
+          } else if (ch == 'i') {
+            insertion_mode= 1;
+            show_message("挿入モード: h,l,j,kでブロックを動かせます");
+          }
         }
       }
         pthread_mutex_lock(&mutex);
