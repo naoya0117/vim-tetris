@@ -1,6 +1,8 @@
 #ifndef HEADER_NAME_H
 #define HEADER_NAME_H
 
+#define MAX_COMMAND_LENGTH 32
+
 #include <ncurses.h>
 
 extern WINDOW *cmdwin;

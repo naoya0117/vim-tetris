@@ -11,7 +11,6 @@
 
 #define GAME_XLENGTH 12
 #define GAME_YLENGTH 22
-#define MAX_COMMAND_LENGTH 32
 
 struct screen {
   int x;
@@ -192,7 +191,7 @@ int tetris(SCREEN base) {
               delete_y = get_scry(cursor.y, base);
             }
 
-          } else if (ch == 'i') {
+          } else if (ch == 'i' || ch == 'a') {
             insertion_mode= 1;
             show_message("挿入モード: h,l,j,kでブロックを動かせます");
           }
