@@ -1,4 +1,4 @@
 #include <ncurses.h>
-void ranking() {
+void call_ranking() {
    ;
 }

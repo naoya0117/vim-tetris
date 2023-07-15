@@ -12,7 +12,7 @@ WINDOW *init_scoreWindow(int y, int x) {
     wmove(window, 0, 1);
     waddstr(window, "SCORE");
     wmove(window, 1, 1);
-    waddstr(window, 0);
+    waddstr(window, "0");
     wrefresh(window);
     return window;
 

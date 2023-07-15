@@ -9,10 +9,10 @@
 #define NUM_OF_MENU 2
 #define COLUMN_SPACING 2
 
+
+
 char cmd_buffer[MAX_COMMAND_LENGTH];
-
 void draw_menu(int y, int x);
-
 void menu() {
 
     int ch;
@@ -43,7 +43,7 @@ void menu() {
         if (current_index==0) {
            call_tetris();
         } else if (current_index==1) 
-           ranking();
+           call_ranking();
 
         break;
        } 

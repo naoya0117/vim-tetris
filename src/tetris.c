@@ -9,6 +9,7 @@
 #include "mutex_shared.h"
 #include "cursor.h"
 #include "score.h"
+#include "ranking.h"
 
 #define GAME_XLENGTH 12
 #define GAME_YLENGTH 22
@@ -27,7 +28,6 @@ struct thread_args {
 void call_game();
 void draw_gameScreen(SCREEN base);
 int tetris(SCREEN base);
-int isGameOver();
 void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[]);
 
 int get_scrx(int x, SCREEN base);
@@ -44,6 +44,7 @@ void *command(void *args);
 void colorRow(int y, SCREEN screen,short color) ;
 void checkRowFull(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) ;
 int deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) ;
+void show_gameOver(int y, int x);
 
 void call_tetris() {
   int max_x, max_y;
@@ -58,6 +59,9 @@ void call_tetris() {
 
   draw_gameScreen(gameScreen);
   tetris(gameScreen);
+  show_gameOver(gameScreen.y-1, gameScreen.x);
+
+  call_ranking();
 }
 
 void draw_gameScreen(SCREEN base) {
@@ -123,17 +127,23 @@ int tetris(SCREEN base) {
   int insertion_mode = 1;
 
   int deletedRow_n;
+  int gameover_flag = 0;
 
   rotate = 0;
   init_blockData(isBlock, isRowFull);
 
   show_message("挿入モード:h,l,j,kでブロックを動かせます");
 
-  while (!isGameOver()) {
+  while (!gameover_flag && (gameover_flag = 1)) {
     kind = rand() % 7;
 
     generateBlock(&focusedBlock, base.y + 3, base.x + GAME_XLENGTH - 2, kind);
+    pthread_mutex_lock(&mutex);
+    mvBlock(&focusedBlock, 0, 0);
+    pthread_mutex_unlock(&mutex);
+
     while (canBlockMove(isBlock, focusedBlock, 1, 0, base)) {
+      gameover_flag = 0;
 
       dx = 0;
       dy = 0;
@@ -228,12 +238,14 @@ int tetris(SCREEN base) {
     stack_block(isBlock, focusedBlock, base);
     checkRowFull(isBlock,isRowFull,base);
     pthread_mutex_unlock(&mutex);
+
   }
+  refresh();
 
   return score;
 }
 
-int isGameOver() { return 0; }
+int isGameOver(int flag) { return flag; }
 
 void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[]) {
   for (int x = 0; x < GAME_XLENGTH; x++) {
@@ -381,4 +393,10 @@ int deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int
   checkRowFull(isBlock, isRowFull, base);
 
   return cnt;
+}
+
+void show_gameOver(int y, int x) {
+  mvaddstr(y, x, "GameOver!!!");
+  refresh();
+  sleep(3);
 }

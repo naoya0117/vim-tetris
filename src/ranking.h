@@ -1,1 +1,1 @@
-void ranking();
+void call_ranking();
