@@ -11,7 +11,6 @@
 
 #define GAME_XLENGTH 12
 #define GAME_YLENGTH 22
-#define MAX_COMMAND_LENGTH 32
 
 struct screen {
   int x;
@@ -61,13 +60,25 @@ void call_tetris() {
 }
 
 void draw_gameScreen(SCREEN base) {
-  move(base.y, base.x);
-  hline(ACS_HLINE, GAME_XLENGTH - 1);
-  vline(ACS_VLINE, GAME_YLENGTH - 1);
-  move(base.y + GAME_YLENGTH - 1, base.x);
-  hline(ACS_HLINE, GAME_XLENGTH);
-  move(base.y, base.x + (GAME_XLENGTH - 1) * 2);
-  vline(ACS_VLINE, GAME_YLENGTH - 1);
+  int x = base.x;
+  int y = base.y;
+
+  int i=0;
+  while (i<GAME_YLENGTH) {
+    squire(y, x, COLOR_BLUE_BLOCK);
+    squire(y, x + SQUIRE_XLENGTH * (GAME_XLENGTH-1), COLOR_BLUE_BLOCK);
+    y += SQUIRE_YLENGTH;
+    i++;
+  }
+  i = 0;
+  y = base.y;
+  while (i<GAME_XLENGTH) {
+    squire(y , x, COLOR_BLUE_BLOCK);
+    squire(y + (GAME_YLENGTH-1) * SQUIRE_YLENGTH, x, COLOR_BLUE_BLOCK);
+    x += SQUIRE_XLENGTH;
+    i++;
+  }
+
   refresh();
 }
 
@@ -192,7 +203,7 @@ int tetris(SCREEN base) {
               delete_y = get_scry(cursor.y, base);
             }
 
-          } else if (ch == 'i') {
+          } else if (ch == 'i' || ch == 'a') {
             insertion_mode= 1;
             show_message("挿入モード: h,l,j,kでブロックを動かせます");
           }
