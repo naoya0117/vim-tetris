@@ -60,13 +60,25 @@ void call_tetris() {
 }
 
 void draw_gameScreen(SCREEN base) {
-  move(base.y, base.x);
-  hline(ACS_HLINE, GAME_XLENGTH - 1);
-  vline(ACS_VLINE, GAME_YLENGTH - 1);
-  move(base.y + GAME_YLENGTH - 1, base.x);
-  hline(ACS_HLINE, GAME_XLENGTH);
-  move(base.y, base.x + (GAME_XLENGTH - 1) * 2);
-  vline(ACS_VLINE, GAME_YLENGTH - 1);
+  int x = base.x;
+  int y = base.y;
+
+  int i=0;
+  while (i<GAME_YLENGTH) {
+    squire(y, x, COLOR_BLUE_BLOCK);
+    squire(y, x + SQUIRE_XLENGTH * (GAME_XLENGTH-1), COLOR_BLUE_BLOCK);
+    y += SQUIRE_YLENGTH;
+    i++;
+  }
+  i = 0;
+  y = base.y;
+  while (i<GAME_XLENGTH) {
+    squire(y , x, COLOR_BLUE_BLOCK);
+    squire(y + (GAME_YLENGTH-1) * SQUIRE_YLENGTH, x, COLOR_BLUE_BLOCK);
+    x += SQUIRE_XLENGTH;
+    i++;
+  }
+
   refresh();
 }
 
