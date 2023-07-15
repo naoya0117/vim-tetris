@@ -61,6 +61,7 @@ void call_tetris() {
   tetris(gameScreen);
   show_gameOver(gameScreen.y-1, gameScreen.x);
 
+  clear();
   call_ranking();
 }
 
