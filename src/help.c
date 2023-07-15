@@ -38,9 +38,9 @@ void help() {
     
 
     getch();
-    refresh();
 
     scr_restore("tmpscr.dump");
+    refresh();
     noecho();
     pthread_mutex_unlock(&mutex);
 
