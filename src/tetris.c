@@ -9,6 +9,7 @@
 #include "mutex_shared.h"
 #include "cursor.h"
 #include "score.h"
+#include "ranking.h"
 
 #define GAME_XLENGTH 12
 #define GAME_YLENGTH 22
@@ -59,6 +60,8 @@ void call_tetris() {
   draw_gameScreen(gameScreen);
   tetris(gameScreen);
   show_gameOver(gameScreen.y-1, gameScreen.x);
+
+  call_ranking();
 }
 
 void draw_gameScreen(SCREEN base) {
