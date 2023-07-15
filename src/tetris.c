@@ -27,7 +27,6 @@ struct thread_args {
 void call_game();
 void draw_gameScreen(SCREEN base);
 int tetris(SCREEN base);
-int isGameOver();
 void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[]);
 
 int get_scrx(int x, SCREEN base);
@@ -123,17 +122,23 @@ int tetris(SCREEN base) {
   int insertion_mode = 1;
 
   int deletedRow_n;
+  int gameover_flag = 0;
 
   rotate = 0;
   init_blockData(isBlock, isRowFull);
 
   show_message("挿入モード:h,l,j,kでブロックを動かせます");
 
-  while (!isGameOver()) {
+  while (!gameover_flag && (gameover_flag = 1)) {
     kind = rand() % 7;
 
     generateBlock(&focusedBlock, base.y + 3, base.x + GAME_XLENGTH - 2, kind);
+    pthread_mutex_lock(&mutex);
+    mvBlock(&focusedBlock, 0, 0);
+    pthread_mutex_unlock(&mutex);
+
     while (canBlockMove(isBlock, focusedBlock, 1, 0, base)) {
+      gameover_flag = 0;
 
       dx = 0;
       dy = 0;
@@ -228,12 +233,15 @@ int tetris(SCREEN base) {
     stack_block(isBlock, focusedBlock, base);
     checkRowFull(isBlock,isRowFull,base);
     pthread_mutex_unlock(&mutex);
+
   }
+  refresh();
+  sleep(3);
 
   return score;
 }
 
-int isGameOver() { return 0; }
+int isGameOver(int flag) { return flag; }
 
 void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[]) {
   for (int x = 0; x < GAME_XLENGTH; x++) {
