@@ -22,6 +22,8 @@ int main(int argc, char **argv) {
    keypad(stdscr, TRUE);
    start_color();
    bkgd(COLOR_PAIR(COLOR_BLACK));
+   refresh();
+
 
    init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
    init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_BLACK);

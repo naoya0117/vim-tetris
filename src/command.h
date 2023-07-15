@@ -1,5 +1,5 @@
-#ifndef HEADER_NAME_H
-#define HEADER_NAME_H
+#ifndef COMMAND_H
+#define COMMAND_H
 
 #define MAX_COMMAND_LENGTH 32
 
@@ -12,4 +12,4 @@ void show_message(char *msg);
 WINDOW *create_commandwin() ;
 
 
-#endif /* HEADER_NAME_H */
+#endif 

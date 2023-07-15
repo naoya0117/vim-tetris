@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include "mutex_shared.h"
 #include "cursor.h"
+#include "score.h"
 
 #define GAME_XLENGTH 12
 #define GAME_YLENGTH 22
@@ -39,11 +40,11 @@ int canBlockRotate(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block,
                    int rotate, SCREEN gameScreen);
 void stack_block(int isBlock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block,
                  SCREEN gameScreen);
-
 void *command(void *args);
 void colorRow(int y, SCREEN screen,short color) ;
 void checkRowFull(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) ;
-void deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) ;
+int deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) ;
+
 void call_tetris() {
   int max_x, max_y;
   SCREEN gameScreen;
@@ -79,6 +80,7 @@ void draw_gameScreen(SCREEN base) {
     i++;
   }
 
+
   refresh();
 }
 
@@ -87,11 +89,13 @@ int tetris(SCREEN base) {
   int thread_flag = 0;
   void* thread_result;
   int command_mode = 0;
+  int score = 0;
+  WINDOW *score_win;
+  score_win = init_scoreWindow(10, base.x + GAME_XLENGTH * SQUIRE_XLENGTH + 5);
 
   CURSOR cursor;
 
   setCursor(&cursor, base.y + GAME_YLENGTH/2, base.x - 1) ;
-  
 
 
   srand((unsigned int)time(NULL));
@@ -117,6 +121,8 @@ int tetris(SCREEN base) {
   int delete_flag = 0;
   int virtual_mode = 0;
   int insertion_mode = 1;
+
+  int deletedRow_n;
 
   rotate = 0;
   init_blockData(isBlock, isRowFull);
@@ -188,7 +194,9 @@ int tetris(SCREEN base) {
             else {
                 if (!delete_y) delete_y = get_scry(cursor.y, base);
 
-                deleteRow(get_scry(cursor.y, base), delete_y, isBlock, isRowFull, base);
+                deletedRow_n = deleteRow(get_scry(cursor.y, base), delete_y, isBlock, isRowFull, base);
+                update_score(deletedRow_n, &score, score_win);
+
                 delete_flag = 0;
                 delete_y = 0;
                 virtual_mode = 0;
@@ -222,7 +230,7 @@ int tetris(SCREEN base) {
     pthread_mutex_unlock(&mutex);
   }
 
-  return 0;
+  return score;
 }
 
 int isGameOver() { return 0; }
@@ -338,7 +346,7 @@ void colorRow(int y, SCREEN screen,short color) {
 int get_absx(int scrx, SCREEN base) { return base.x + scrx * SQUIRE_XLENGTH;};
 int get_absy(int scry,SCREEN base) { return base.y + scry * SQUIRE_YLENGTH;};
 
-void deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) {
+int deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) {
   int x,y;
   int cnt=0;
 
@@ -350,7 +358,7 @@ void deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], in
 
   y = starty;
   while (isRowFull[y])y++;
-  if (y<=endy) return;
+  if (y<=endy) return 0;
 
   for (y = starty; y <= endy ; y++) {
     colorRow(y, base, COLOR_BLACK_BLOCK);
@@ -371,4 +379,6 @@ void deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], in
     }
   }
   checkRowFull(isBlock, isRowFull, base);
+
+  return cnt;
 }
