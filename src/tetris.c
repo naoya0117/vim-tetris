@@ -43,6 +43,7 @@ void *command(void *args);
 void colorRow(int y, SCREEN screen,short color) ;
 void checkRowFull(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREEN base) ;
 int deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) ;
+void show_gameOver(int y, int x);
 
 void call_tetris() {
   int max_x, max_y;
@@ -57,6 +58,7 @@ void call_tetris() {
 
   draw_gameScreen(gameScreen);
   tetris(gameScreen);
+  show_gameOver(gameScreen.y-1, gameScreen.x);
 }
 
 void draw_gameScreen(SCREEN base) {
@@ -236,7 +238,6 @@ int tetris(SCREEN base) {
 
   }
   refresh();
-  sleep(3);
 
   return score;
 }
@@ -389,4 +390,10 @@ int deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int
   checkRowFull(isBlock, isRowFull, base);
 
   return cnt;
+}
+
+void show_gameOver(int y, int x) {
+  mvaddstr(y, x, "GameOver!!!");
+  refresh();
+  sleep(3);
 }
