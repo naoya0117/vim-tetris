@@ -56,6 +56,7 @@ int call_command(int isallowed, char str[], int length) {
         pthread_mutex_lock(&mutex);
         wclear(cmdwin);
         clear();
+        endwin();
         pthread_mutex_unlock(&mutex);
          exit(0);
      } else {

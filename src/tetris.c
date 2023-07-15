@@ -65,16 +65,16 @@ void draw_gameScreen(SCREEN base) {
 
   int i=0;
   while (i<GAME_YLENGTH) {
-    squire(y, x, COLOR_BLUE_BLOCK);
-    squire(y, x + SQUIRE_XLENGTH * (GAME_XLENGTH-1), COLOR_BLUE_BLOCK);
+    squire(y, x, COLOR_WHITE_BLOCK);
+    squire(y, x + SQUIRE_XLENGTH * (GAME_XLENGTH-1), COLOR_WHITE_BLOCK);
     y += SQUIRE_YLENGTH;
     i++;
   }
   i = 0;
   y = base.y;
   while (i<GAME_XLENGTH) {
-    squire(y , x, COLOR_BLUE_BLOCK);
-    squire(y + (GAME_YLENGTH-1) * SQUIRE_YLENGTH, x, COLOR_BLUE_BLOCK);
+    squire(y , x, COLOR_WHITE_BLOCK);
+    squire(y + (GAME_YLENGTH-1) * SQUIRE_YLENGTH, x, COLOR_WHITE_BLOCK);
     x += SQUIRE_XLENGTH;
     i++;
   }
@@ -195,14 +195,15 @@ int tetris(SCREEN base) {
             }
           } else if (ch == 'V') {
             if (virtual_mode) {
-            virtual_mode = 0;
-            delete_y = 0;
+              virtual_mode = 0;
+              delete_y = 0;
+              show_message("通常モード:j,kでカーソル移動、ddで一行削除");
             } else {
               delete_flag = 1;
               virtual_mode = 1;
               delete_y = get_scry(cursor.y, base);
+              show_message("選択モード");
             }
-
           } else if (ch == 'i' || ch == 'a') {
             insertion_mode= 1;
             show_message("挿入モード: h,l,j,kでブロックを動かせます");
