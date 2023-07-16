@@ -1,6 +1,6 @@
+t	7200
+s	1800
 naoya	800
-t	200
-hanao	0
 aiueo	0
 score	0
 b	0

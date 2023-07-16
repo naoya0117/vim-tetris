@@ -200,9 +200,6 @@ int tetris(SCREEN base, char *user) {
         timeout(400);
         ch = getch();
 
-        if (delete_flag && ch != 'd') {
-          delete_flag = 0;
-        }
         if (g_flag && ch != 'g') {
           g_flag = 0;
         }
