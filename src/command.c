@@ -60,7 +60,7 @@ int call_command(int isallowed, char str[], int length) {
         pthread_mutex_unlock(&mutex);
          exit(0);
      } else {
-      show_message("エラー:ランキングが更新されていません。強制終了するには!を加えてください。");
+      show_message("エラー:強制終了するには!を加えてください。");
      }
   }
 
