@@ -1,3 +1,8 @@
+#ifndef BLOCK_H
+#define BLOCK_H
+
+#include <ncurses.h>
+
 #define COLOR_BLACK_BLOCK 8
 #define COLOR_RED_BLOCK 9
 #define COLOR_BLUE_BLOCK 10
@@ -25,5 +30,10 @@ BLOCK calc_move(BLOCK block, int dy, int dx);
 void rotateBlock(BLOCK *block, int rotate);
 BLOCK calc_rotate(BLOCK block, int rotate);
 void colorBlock(BLOCK *Block, short color);
+void wcolorBlock(WINDOW *win,BLOCK *Block, short color);
 
 void squire(int y, int x, short color);
+
+BLOCK calc_ChangeBlock(BLOCK block, int kind) ;
+
+#endif

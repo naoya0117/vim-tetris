@@ -3,7 +3,7 @@
 #include <string.h>
 #include "command.h"
 
-#define NUM_OF_DATA 12
+#define NUM_OF_DATA 11
 #define MAX_LINE 256
 
 
@@ -42,7 +42,11 @@ void call_ranking(char *user, int score) {
       if (data[i].isCurrentScore) {
          mvaddstr(y + i*2, x - 15, "現在のスコア:");
       }
-      sprintf(buffer, "%d位\t%d点\t%s", i+1, data[i].score, data[i].name);
+      if (data[i].isCurrentScore && i == 10) {
+         sprintf(buffer, "ランク外\t%d点\t%s",  data[i].score, data[i].name);
+      } else {
+         sprintf(buffer, "%d位\t%d点\t%s", i+1, data[i].score, data[i].name);
+      }
       mvaddstr(y + i*2, x, buffer);
       refresh();
    }
@@ -104,6 +108,7 @@ void insert_playerRank(char *user, int player_score, DATA *data, int n) {
 
 void write_ranking(char *user, int score, DATA *data, int n) {
    FILE *fp;
+   int cnt = 0;
    char buffer[MAX_LINE];
    if (user != NULL) {
       if((fp=fopen("ranking.txt","w")) == NULL) {
@@ -112,7 +117,6 @@ void write_ranking(char *user, int score, DATA *data, int n) {
          exit(1);
       }
 
-      int cnt = 0;
       for  (int i=0; i<n && cnt < NUM_OF_DATA - 1; i++) {
          if (!strcmp(data[i].name, user) && !data[i].isCurrentScore) {
             continue;

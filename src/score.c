@@ -24,6 +24,8 @@ void update_score(int removedrow, int *score, WINDOW *window){
     pthread_mutex_lock(&mutex);
     wclear(window);
     sprintf(str, "%d", *score);
+    wmove(window, 0, 1);
+    waddstr(window, "SCORE");
     wmove(window, 1, 1);
     waddstr(window,str);
     wrefresh(window);
