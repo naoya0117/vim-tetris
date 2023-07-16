@@ -1,1 +1,1 @@
-void menu();
+void menu(char *user);

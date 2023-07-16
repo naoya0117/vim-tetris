@@ -25,7 +25,6 @@ struct thread_args {
   int result;
 } typedef THREAD_ARGS;
 
-void call_game();
 void draw_gameScreen(SCREEN base);
 int tetris(SCREEN base);
 void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[]);
@@ -46,8 +45,9 @@ void checkRowFull(int isBlock[GAME_XLENGTH][GAME_YLENGTH],int isRowFull[], SCREE
 int deleteRow(int starty, int endy, int isBlock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[], SCREEN base) ;
 void show_gameOver(int y, int x);
 
-void call_tetris() {
+void call_tetris(char *user) {
   int max_x, max_y;
+  int score;
   SCREEN gameScreen;
 
   add_blockcolor();
@@ -58,11 +58,11 @@ void call_tetris() {
   gameScreen.y = max_y / 10;
 
   draw_gameScreen(gameScreen);
-  tetris(gameScreen);
+  score = tetris(gameScreen);
   show_gameOver(gameScreen.y-1, gameScreen.x);
 
   clear();
-  call_ranking();
+  call_ranking(user, score);
 }
 
 void draw_gameScreen(SCREEN base) {

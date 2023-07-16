@@ -1,1 +1,1 @@
-void call_tetris();
+void call_tetris(char *user);

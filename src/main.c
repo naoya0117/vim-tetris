@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
    init_sharedmutex();
 
-   menu();
+   menu(argv[1]);
 
    delwin(cmdwin);
    endwin();

@@ -13,7 +13,7 @@
 
 char cmd_buffer[MAX_COMMAND_LENGTH];
 void draw_menu(int y, int x);
-void menu() {
+void menu(char *user) {
 
     int ch;
     CURSOR cursor;
@@ -41,9 +41,9 @@ void menu() {
         refresh();
 
         if (current_index==0) {
-           call_tetris();
+           call_tetris(user);
         } else if (current_index==1) 
-           call_ranking();
+           call_ranking(NULL, 0);
 
         break;
        } 
