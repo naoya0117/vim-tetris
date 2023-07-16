@@ -140,7 +140,8 @@ int tetris(SCREEN base, char *user) {
   int delete_y = 0;
 
   int delete_flag = 0;
-  int virtual_mode = 0;
+  int g_flag = 0;
+  int visual_mode = 0;
   int insertion_mode = 1;
 
   int deletedRow_n;
@@ -198,6 +199,15 @@ int tetris(SCREEN base, char *user) {
         }
         timeout(400);
         ch = getch();
+
+        if (delete_flag && ch != 'd') {
+          delete_flag = 0;
+        }
+        if (g_flag && ch != 'g') {
+          g_flag = 0;
+        }
+
+
         if (ch == ':' && !thread_flag) {
             command_args.buffer = cmd_buffer;
             command_args.iscmdmode = &command_mode;
@@ -227,6 +237,17 @@ int tetris(SCREEN base, char *user) {
             mvcursor(&cursor, -1);
           } else if (ch == 'j' && get_scry(cursor.y, base) < GAME_YLENGTH - 2) {
             mvcursor(&cursor, 1);
+          } else if (ch == 'G') {
+            int game_endy = GAME_YLENGTH * SQUIRE_YLENGTH + base.y - 2;
+            mvcursor(&cursor, game_endy - cursor.y);
+          } else if (ch == 'g') {
+            if (!g_flag) {
+              g_flag = 1;
+            } else {
+              g_flag = 0;
+              int game_starty = base.y + SQUIRE_YLENGTH;
+              mvcursor(&cursor, game_starty - cursor.y);
+            }
           } else if (ch == 'd') {
 
             if (!delete_flag) delete_flag = 1;
@@ -238,7 +259,7 @@ int tetris(SCREEN base, char *user) {
 
                 delete_flag = 0;
                 delete_y = 0;
-                virtual_mode = 0;
+                visual_mode = 0;
             }
 
           } else if (ch == 'y') {
@@ -252,13 +273,13 @@ int tetris(SCREEN base, char *user) {
             update_clipboard(clip_win, clip_kind);
             refresh();
           }if (ch == 'V') {
-            if (virtual_mode) {
-              virtual_mode = 0;
+            if (visual_mode) {
+              visual_mode = 0;
               delete_y = 0;
               show_message("通常モード:j,kでカーソル移動、ddで一行削除");
             } else {
               delete_flag = 1;
-              virtual_mode = 1;
+              visual_mode = 1;
               delete_y = get_scry(cursor.y, base);
               show_message("選択モード");
             }

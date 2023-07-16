@@ -17,6 +17,8 @@ WINDOW *init_selectionWindow(int y, int x) {
 
 int update_selection(WINDOW *window, int kind) {
     BLOCK block;
+
+    pthread_mutex_lock(&mutex);
     wclear(window);
 
     wmove(window, 6, 1);
@@ -26,6 +28,7 @@ int update_selection(WINDOW *window, int kind) {
     wcolorBlock(window,&block,COLOR_BLUE_BLOCK);
 
     wrefresh(window);
+    pthread_mutex_unlock(&mutex);
     return 0;
 }
 
@@ -41,6 +44,7 @@ WINDOW *init_clipboardWindow(int y, int x) {
 
 int update_clipboard(WINDOW *window, int kind) {
     BLOCK block;
+    pthread_mutex_lock(&mutex);
     wclear(window);
 
     wmove(window, 6, 1);
@@ -52,5 +56,6 @@ int update_clipboard(WINDOW *window, int kind) {
     }
 
     wrefresh(window);
+    pthread_mutex_unlock(&mutex);
     return 0;
 }
