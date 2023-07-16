@@ -16,8 +16,8 @@ block.o : block.c block.h
 	gcc -c block.c
 ranking.o : ranking.c
 	gcc -c ranking.c
-score.o : score.c
-	gcc -c score.c
+	score.o : score.c
+	gcc -c score.c mutex_shared.h
 clipboard.o : clipboard.c
 	gcc -c clipboard.c
 clear :
