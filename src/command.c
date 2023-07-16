@@ -57,8 +57,8 @@ int call_command(int isallowed, char str[], int length) {
         wclear(cmdwin);
         clear();
         endwin();
+        exit(0);
         pthread_mutex_unlock(&mutex);
-         exit(0);
      } else {
       show_message("エラー:強制終了するには!を加えてください。");
      }

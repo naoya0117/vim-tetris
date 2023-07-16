@@ -343,7 +343,7 @@ int canBlockRotate(int isblock[GAME_XLENGTH][GAME_YLENGTH], BLOCK block,
                    int rotate, SCREEN gameScreen) {
   int x1, x2, x3, x4;
   int y1, y2, y3, y4;
-  BLOCK nextBlock = calc_ChangeBlock(block, rotate);
+  BLOCK nextBlock = calc_rotate(block, rotate);
 
   x1 = get_scrx(nextBlock.x1, gameScreen);
   y1 = get_scry(nextBlock.y1, gameScreen);
