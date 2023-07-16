@@ -60,7 +60,7 @@ int call_command(int isallowed, char str[], int length) {
         pthread_mutex_unlock(&mutex);
          exit(0);
      } else {
-      show_message("エラー:ファイルが最新ではないため終了できません。強制実行するには!を加えてください。");
+      show_message("エラー:ランキングが更新されていません。強制終了するには!を加えてください。");
      }
   }
 
@@ -103,7 +103,8 @@ void get_command(char *buffer, int length) {
   inp_pos.x++;
 
   while((ch = wgetch(cmdwin)) != '\n') {
-    if (ch == 27) {
+    if (ch == 27) {//escキー
+      memset(buffer, '\0', length);
       return;
     }
 
@@ -147,10 +148,8 @@ void show_message(char *msg) {
   POSITION cmd_area=calc_commandArea();
   wclear(cmdwin);
   pthread_mutex_lock(&mutex);
-  attron(COLOR_PAIR(COLOR_RED | A_BOLD));
   wmove(cmdwin, cmd_area.y, cmd_area.x);
   waddstr(cmdwin , msg );
-  attroff(COLOR_PAIR(COLOR_RED | A_BOLD));
   wrefresh(cmdwin);
   pthread_mutex_unlock(&mutex);
 }
