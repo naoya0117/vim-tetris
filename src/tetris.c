@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <string.h>
 #include "mutex_shared.h"
 #include "cursor.h"
 #include "score.h"
@@ -26,7 +27,7 @@ struct thread_args {
 } typedef THREAD_ARGS;
 
 void draw_gameScreen(SCREEN base);
-int tetris(SCREEN base);
+int tetris(SCREEN base, char *user);
 void init_blockData(int isblock[GAME_XLENGTH][GAME_YLENGTH], int isRowFull[]);
 
 int get_scrx(int x, SCREEN base);
@@ -58,7 +59,7 @@ void call_tetris(char *user) {
   gameScreen.y = max_y / 10;
 
   draw_gameScreen(gameScreen);
-  score = tetris(gameScreen);
+  score = tetris(gameScreen, user);
   show_gameOver(gameScreen.y-1, gameScreen.x);
 
   clear();
@@ -89,7 +90,7 @@ void draw_gameScreen(SCREEN base) {
   refresh();
 }
 
-int tetris(SCREEN base) {
+int tetris(SCREEN base, char *user) {
   pthread_t command_thread;
   int thread_flag = 0;
   void* thread_result;
@@ -167,7 +168,13 @@ int tetris(SCREEN base) {
           thread_flag = 0;
           pthread_join(command_thread, NULL);
           if (!command_args.result) {
+            if (!strcmp(cmd_buffer, "w") || !strcmp(cmd_buffer, "write")) {
+              update_ranking(user, score);
+            } else {
+              show_message("コマンドが存在しません。");
+            }
           }
+          insertion_mode=0;
         }
         timeout(400);
         ch = getch();
