@@ -29,9 +29,17 @@ void call_ranking(char *user, int score) {
 
 
    if ((fp = fopen("ranking.txt", "r"))== NULL) {
-      fprintf(stderr, "ranking.txtがありません。\n");
-      endwin();
-      exit(1);
+      if((fp = fopen("ranking.txt", "w"))== NULL) {
+         endwin();
+         fprintf(stderr, "ファイルの作成に失敗しました。\n");
+         exit(1);
+      }
+      fclose(fp);
+      if ((fp = fopen("ranking.txt", "r"))== NULL) {
+         endwin();
+         fprintf(stderr, "ranking.txtを開けませんでした。\n終了します。\n");
+         exit(1);
+      }
    }
 
    n = 0;
