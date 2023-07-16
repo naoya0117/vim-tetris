@@ -9,6 +9,8 @@
 
 
 void swap(int *a, int *b);
+void wsquire(WINDOW *win,int y, int x, short color) ;
+void wcolorBlock(WINDOW *win,BLOCK *block, short color) ;
 void squire(int y, int x, short color);
 void generateBlock(BLOCK *block, int y, int x, int kind) {
    if(kind == 0) {
@@ -83,10 +85,13 @@ void generateBlock(BLOCK *block, int y, int x, int kind) {
    }
 }
 void colorBlock(BLOCK *block, short color) {
-   squire(block->y1, block->x1, color);
-   squire(block->y2, block->x2, color);
-   squire(block->y3, block->x3, color);
-   squire(block->y4, block->x4, color);
+   wcolorBlock(stdscr, block, color);
+}
+void wcolorBlock(WINDOW *win, BLOCK *block, short color) {
+   wsquire(win,block->y1, block->x1, color);
+   wsquire(win,block->y2, block->x2, color);
+   wsquire(win,block->y3, block->x3, color);
+   wsquire(win,block->y4, block->x4, color);
 }
 
 void mvBlock(BLOCK *block, int dy, int dx) {
@@ -94,6 +99,7 @@ void mvBlock(BLOCK *block, int dy, int dx) {
    *block = calc_move(*block, dy, dx);
    colorBlock(block, COLOR_BLUE_BLOCK);
 }
+
 
 BLOCK calc_move(BLOCK block, int dy, int dx) {
    block.x1 = block.x1 + dx * SQUIRE_XLENGTH;
@@ -107,6 +113,7 @@ BLOCK calc_move(BLOCK block, int dy, int dx) {
 
    return block;
 }
+
 
 void rotateBlock(BLOCK *block, int rotate) {
 
@@ -130,18 +137,14 @@ BLOCK calc_rotate(BLOCK block, int rotate) {
    y3 = (block.y3 - block.y1) / SQUIRE_YLENGTH;
    x4 = (block.x4 - block.x1) / SQUIRE_XLENGTH;
    y4 = (block.y4 - block.y1) / SQUIRE_YLENGTH;
-   
 
    swap(&x2, &y2);
    swap(&x3, &y3);
    swap(&x4, &y4);
 
-
    y2 *= -1;
    y3 *= -1;
    y4 *= -1;
-
-
 
    block.x2 = block.x1 + (x2 * SQUIRE_XLENGTH);
    block.y2 = block.y1 + (y2 * SQUIRE_YLENGTH);
@@ -154,9 +157,14 @@ BLOCK calc_rotate(BLOCK block, int rotate) {
 
 }
 
+BLOCK calc_ChangeBlock(BLOCK block, int kind) {
+   BLOCK next = block;
+   generateBlock(&next, block.y1, block.x1, kind);
+   return next;
+}
+
 void squire(int y, int x, short color) {
-   mvaddch(y, x, ' ' | COLOR_PAIR(color));
-   mvaddch(y, x+1, ' ' | COLOR_PAIR(color));
+   wsquire(stdscr ,y, x, color);
 }
 
 void add_blockcolor() {
@@ -187,4 +195,11 @@ void swap(int *a, int *b) {
    int tmp = *a;
    *a = *b;
    *b = tmp;
+}
+
+void wsquire(WINDOW *win, int y, int x, short color) {
+   wmove(win, y, x);
+   waddch(win, ' ' |COLOR_PAIR(color));
+   wmove(win, y, x+1);
+   waddch(win,  ' ' | COLOR_PAIR(color));
 }
