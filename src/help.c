@@ -19,6 +19,7 @@ void help() {
     getmaxyx(stdscr,maxy,maxx);
 
     if ((help_fp = fopen("help.txt", "r")) == NULL) {
+        endwin();
         fprintf(stderr, "help.txtがありません。\n");
         exit(1);
     }
