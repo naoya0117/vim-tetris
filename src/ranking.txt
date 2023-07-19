@@ -1,10 +1,10 @@
-t	7200
-s	1800
-naoya	800
+s	35000
+test	13000
+naoya	1200
+t	400
 aiueo	0
 score	0
 b	0
 c	0
 d	0
 a	0
-f	0

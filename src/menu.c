@@ -36,7 +36,7 @@ void menu(char *user) {
     while(1) {
        ch = getch();
 
-       if (ch == 'i') {
+       if (ch == 'i' || ch == 'a') {
         clear ();
         refresh();
 
