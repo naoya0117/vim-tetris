@@ -50,7 +50,7 @@ void menu(char *user) {
 
        if (ch == ':') {
           if(!call_command(1, cmd_buffer, MAX_COMMAND_LENGTH))
-            show_message("エラー:コマンドが見つかりませんでした");
+            show_message("コマンドが存在しません。");
        } else if (ch == 'k' && current_index > 0 ) {
         mvcursor(&cursor, COLUMN_SPACING * (-1));
         current_index--;

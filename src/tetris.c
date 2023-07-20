@@ -205,14 +205,7 @@ int tetris(SCREEN base, char *user) {
         }
 
 
-        if (ch == ':' && !thread_flag) {
-            command_args.buffer = cmd_buffer;
-            command_args.iscmdmode = &command_mode;
-            command_mode = 1;
-            thread_flag = 1;
-            pthread_create(&command_thread, NULL,
-                                command, (void *)&command_args);
-        } else if (insertion_mode) {
+        if (insertion_mode) {
           if (ch == 'k' &&
               canBlockRotate(isBlock, focusedBlock, rotate, base)) {
               rotateBlock(&focusedBlock, rotate++);
@@ -230,7 +223,14 @@ int tetris(SCREEN base, char *user) {
               show_message("通常モード:j,kでカーソル移動、ddで一行削除");
           }
         } else {
-          if (ch == 'k' && get_scry(cursor.y, base) > 1) {
+          if (ch == ':' && !thread_flag) {
+            command_args.buffer = cmd_buffer;
+            command_args.iscmdmode = &command_mode;
+            command_mode = 1;
+            thread_flag = 1;
+            pthread_create(&command_thread, NULL,
+                                command, (void *)&command_args);
+          } else if (ch == 'k' && get_scry(cursor.y, base) > 1) {
             mvcursor(&cursor, -1);
           } else if (ch == 'j' && get_scry(cursor.y, base) < GAME_YLENGTH - 2) {
             mvcursor(&cursor, 1);
