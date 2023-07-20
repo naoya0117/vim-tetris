@@ -14,7 +14,7 @@ struct data {
 } typedef DATA;
 
 void insert_playerRank(char *user, int score, DATA *data, int n) ;
-void write_ranking(char *user, int score, DATA *data, int n) ;
+void write_ranking(char *user, DATA *data, int n) ;
 void bubbleSort(DATA data[], int n) ;
 int read_ranking(DATA *data);
 
@@ -59,7 +59,7 @@ void call_ranking(char *user, int score) {
       if((ch = getch()) == ':') {
          call_command(0, cmd_buffer, MAX_COMMAND_LENGTH);
          if (!strcmp(cmd_buffer, "w") || !strcmp(cmd_buffer, "write")) {
-            write_ranking(user, score,data, n);
+            write_ranking(user,data, n);
          }
       }
    }
@@ -77,7 +77,7 @@ void update_ranking(char *user, int score) {
    n++;
    insert_playerRank(user, score, data, n);
    bubbleSort(data, n);
-   write_ranking(user, score, data, n);
+   write_ranking(user,  data, n);
 }
 
 
@@ -106,7 +106,7 @@ void insert_playerRank(char *user, int player_score, DATA *data, int n) {
    data[n-1] = player;
 }
 
-void write_ranking(char *user, int score, DATA *data, int n) {
+void write_ranking(char *user, DATA *data, int n) {
    FILE *fp;
    int cnt = 0;
    char buffer[MAX_LINE];
