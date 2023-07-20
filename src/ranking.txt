@@ -1,10 +1,10 @@
 s	35000
+t	16800
 test	13000
+pen	7400
 naoya	1200
-t	400
 aiueo	0
 score	0
 b	0
 c	0
 d	0
-a	0
