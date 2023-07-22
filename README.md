@@ -1,5 +1,6 @@
 # vim-tetris
 ## Description
+授業で作った
 vimのキー操作で動くテトリスです
 
 ```
