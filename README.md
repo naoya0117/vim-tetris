@@ -2,6 +2,10 @@
 ## Description
 vimのキー操作で動くテトリスです
 
+<img src="https://github.com/naoya0117/vim-tetris/blob/image/tetris.png?raw=true" width="50%">
+
+## Getting started
+
 ```
 git clone https://github.com/naoya0117/vim-tetris.git
 cd vim-tetris/src
