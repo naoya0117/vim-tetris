@@ -1,7 +1,7 @@
 # vim-tetris
 ## Description
 vimのキー操作で動くテトリスです
-![tetris](https://github.com/naoya0117/vim-tetris/blob/image/tetris.png?raw=true "tetris")
+<img scr="https://github.com/naoya0117/vim-tetris/blob/image/tetris.png?raw=true" width="50%">
 ## Getting Started
 ```
 git clone https://github.com/naoya0117/vim-tetris.git
