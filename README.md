@@ -21,7 +21,7 @@ or
 bin/run.sh
 yourname
 ```
-## uninstall
+## Uninstall
 ```
 $ cd vim-tetris-plus
 $ bin/clear.sh
