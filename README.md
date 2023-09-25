@@ -21,6 +21,10 @@ or
 bin/run.sh
 yourname
 ```
+
+If you have a direct execution environment, you can start it with ```cd src && make . /main yourname``` instead of using docker.
+
+
 ## Uninstall
 ```
 $ cd vim-tetris-plus
@@ -36,3 +40,10 @@ rm -rf ./vim-tetris-plus
 - docker
 - docker-compose
 - (or docker-desktop)
+
+if you don't want to use docker, following environment is required.
+- gcc
+- make
+- pthread(c-library)
+- ncurses(c-library)
+- ja_JP.UTF-8 support
