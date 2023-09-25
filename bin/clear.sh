@@ -4,9 +4,11 @@ script_dir=$(cd $(dirname $0); pwd)
 
 docker_dir=$script_dir/..
 
+echo "if your docker is not running, maybe you should run as priviledge user"
+
 echo "1. delete playing data"
 echo "2. remove container"
-echo "3. remove image"
+echo "3. remove image and container"
 
 read -p "please input your choice: " choice
 
