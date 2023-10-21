@@ -10,8 +10,8 @@ vimのキー操作で動くテトリスです
 ## Getting started
 
 ```
-git clone https://github.com/naoya0117/vim-tetris-plus.git
-cd vim-tetris-plus
+git clone https://github.com/naoya0117/vim-tetris.git
+cd vim-tetris
 ```
 ```
 bin/run.sh yourname
