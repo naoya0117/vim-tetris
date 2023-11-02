@@ -1,4 +1,4 @@
-From ubuntu
+FROM ubuntu
 
 COPY ./src /app
 WORKDIR /app
