@@ -3,6 +3,8 @@
 授業で作った
 
 vimのキー操作で動くテトリスです
+- vimのノーマルモードと挿入モードを実装しています。
+- ゲーム中:hでヘルプを起動できます。
 - dockerで動くように改良しました
 
 <img src="https://github.com/naoya0117/vim-tetris/blob/image/tetris.png?raw=true" width="50%">
