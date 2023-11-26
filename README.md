@@ -29,7 +29,7 @@ If you have a direct execution environment, you can start it with ```cd src && m
 
 ## Uninstall
 ```
-$ cd vim-tetris-plus
+$ cd vim-tetris
 $ bin/clear.sh
 3
 $ cd ..
