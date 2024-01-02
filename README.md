@@ -48,7 +48,7 @@ if you don't want to use docker, following environment is required.
 - ncurses(c-library)
 - ja_JP.UTF-8 support
 
-  ## Links
+## Links
 - Repository: [https://github.com/naoya0117/vim-tetris](https://github.com/naoya0117/vim-tetris)
 
 - Github: [https://github.com/naoya0117](https://github.com/naoya0117)
