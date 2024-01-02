@@ -1,5 +1,4 @@
 # vim-tetris
-- https://github.com/naoya0117/vim-tetris
 ## Description
 授業で作った
 
@@ -37,8 +36,6 @@ $ cd ..
 rm -rf ./vim-tetris-plus
 ```
 
-
-
 ## Requirement
 - docker
 - docker-compose
@@ -50,3 +47,11 @@ if you don't want to use docker, following environment is required.
 - pthread(c-library)
 - ncurses(c-library)
 - ja_JP.UTF-8 support
+
+  ## Links
+- Repository: [https://github.com/naoya0117/vim-tetris](https://github.com/naoya0117/vim-tetris)
+
+- Github: [https://github.com/naoya0117](https://github.com/naoya0117)
+
+- Blog: [https://naoya0117.com](https://naoya0117.com)
+  
