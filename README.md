@@ -33,7 +33,7 @@ $ cd vim-tetris
 $ bin/clear.sh
 3
 $ cd ..
-rm -rf ./vim-tetris-plus
+rm -rf ./vim-tetris
 ```
 
 ## Requirement
