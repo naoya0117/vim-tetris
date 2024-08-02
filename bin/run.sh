@@ -30,9 +30,9 @@ fi
 if [ -z $(docker image ls | grep -e vim-tetris) ] ; then
     echo "vim-tetris image is not found"
     echo "try to build vim-tetris image..."
-    docker-compose build
+    docker compose build
 fi
 
 echo "start vim-tetris..."
-docker-compose up -d
-docker-compose exec tetris bash -c "./main ${name}"
+docker compose up -d
+docker compose exec tetris bash -c "./main ${name}"

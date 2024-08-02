@@ -1,9 +1,9 @@
-FROM ubuntu
+FROM ubuntu:24.10
 
 COPY ./src /app
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     language-pack-ja \
     gcc \
     make \
