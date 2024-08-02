@@ -38,8 +38,6 @@ rm -rf ./vim-tetris
 
 ## Requirement
 - docker
-- docker-compose
-- (or docker-desktop)
 
 if you don't want to use docker, following environment is required.
 - gcc
