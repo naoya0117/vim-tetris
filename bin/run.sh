@@ -26,8 +26,7 @@ else
     name=${1}
 fi
 
-[ -z $(ls | grep Dockerfile) ] && echo "No dockerfile found" && exit 1
-if [ -z $(docker image ls | grep -e vim-tetris) ] ; then
+if [ -z "$(docker image ls | grep -e vim-tetris)" ] ; then
     echo "vim-tetris image is not found"
     echo "try to build vim-tetris image..."
     docker compose build
@@ -35,4 +34,4 @@ fi
 
 echo "start vim-tetris..."
 docker compose up -d
-docker compose exec tetris bash -c "./main ${name}"
+docker compose exec tetris /bin/bash -c "tvim ${name}"

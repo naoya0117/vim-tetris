@@ -1,8 +1,11 @@
 # [vim-tetris](https://github.com/naoya0117/vim-tetris)
+
 ## Description
+
 授業で作った
 
 vimのキー操作で動くテトリスです
+
 - vimのノーマルモードと挿入モードを実装しています。
 - ゲーム中:hでヘルプを起動できます。
 - dockerで動くように改良しました
@@ -11,24 +14,25 @@ vimのキー操作で動くテトリスです
 
 ## Getting started
 
-```
-git clone https://github.com/naoya0117/vim-tetris.git
-cd vim-tetris
-```
-```
-bin/run.sh yourname
-```
-or 
-```
-bin/run.sh
-yourname
+```shell-session
+$ git clone https://github.com/naoya0117/vim-tetris.git
+$ cd vim-tetris
 ```
 
-If you have a direct execution environment, you can start it with ```cd src && make . /main yourname``` instead of using docker.
+```shell-session
+$ bin/run.sh yourname
+```
 
+or
+
+```
+$ bin/run.sh
+$yourname
+```
 
 ## Uninstall
-```
+
+```shell-session
 $ cd vim-tetris
 $ bin/clear.sh
 3
@@ -37,19 +41,13 @@ rm -rf ./vim-tetris
 ```
 
 ## Requirement
+
 - docker
 
-if you don't want to use docker, following environment is required.
-- gcc
-- make
-- pthread(c-library)
-- ncurses(c-library)
-- ja_JP.UTF-8 support
-
 ## Links
+
 - Repository: [https://github.com/naoya0117/vim-tetris](https://github.com/naoya0117/vim-tetris)
 
 - Github: [https://github.com/naoya0117](https://github.com/naoya0117)
 
 - Blog: [https://naoya0117.com](https://naoya0117.com)
-  
