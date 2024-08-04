@@ -1,4 +1,3 @@
-
 # ビルドステージ
 FROM ubuntu:oracular-20240617 AS builder
 
