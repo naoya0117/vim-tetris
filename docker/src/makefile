@@ -21,4 +21,4 @@ score.o : score.c mutex_shared.h
 clipboard.o : clipboard.c mutex_shared.h
 	gcc -c clipboard.c
 clear :
-	rm *.o main
+	rm *.o tvim -f
