@@ -1,14 +1,12 @@
 # ビルドステージ
-FROM ubuntu:oracular-20240617 AS builder
+FROM ubuntu:oracular AS builder
 
 COPY ./src /app
 WORKDIR /app
 
 # 必要なパッケージをインストール
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        gcc=4:14.1.0-2ubuntu1 \
-        make=4.3-4.1build2 \
-        libncurses-dev=6.5-2 \
+        gcc make libncurses-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && \
@@ -16,11 +14,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     make -f /app/makefile
 
 # ランタイムステージ
-FROM ubuntu:oracular-20240617
+FROM ubuntu:oracular
 
 # 必要なパッケージをインストール
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        language-pack-ja=1:24.04+20240419 \
+        language-pack-ja \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && \

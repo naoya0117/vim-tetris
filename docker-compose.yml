@@ -1,5 +1,6 @@
 services:
   tetris:
+    image: "mndolin/vim-tetris:ubuntu-oracular"
     build:
       context: "./docker"
       dockerfile: "Dockerfile"
