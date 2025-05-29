@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 while getopts h OPT; do
   case $OPT in
@@ -15,12 +15,12 @@ while getopts h OPT; do
   esac
 done
 
-script_dir=$(dirname $0)
-cd ${script_dir}/..
+script_dir=$(dirname "$0")
+cd "${script_dir}"/.. || exit
 
-if [ -z ${1} ]; then
+if [ -z "${1}" ]; then
   echo "Please enter your name"
-  read -p "Name: " name
+  read -rp "Name: " name
 else
   name=${1}
 fi
